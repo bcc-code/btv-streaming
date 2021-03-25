@@ -11,25 +11,44 @@ using System.Threading.Tasks;
 namespace LivestreamFunctions
 {
     [ApiController]
-    [Route("widevine")]
-    public class KeyDeliveryCenc : ControllerBase
+    [Route("api/keydelivery")]
+    public class KeyController : ControllerBase
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
         private readonly KeyRepository _keyRepository;
 
-        public KeyDeliveryCenc(StreamingTokenHelper streamingTokenHelper, KeyRepository keyRepository)
+        public KeyController(StreamingTokenHelper streamingTokenHelper, KeyRepository keyRepository)
         {
             _streamingTokenHelper = streamingTokenHelper;
             _keyRepository = keyRepository;
         }
 
-        [HttpGet("getLicense")]
-        [HttpPost("getLicense")]
+        [HttpGet("{keyGroup}/{keyId}")]
         [EnableCors("All")]
-        public async Task<IActionResult> Run()
+        public async Task<IActionResult> GetByKeyAndGroup(string keyGroup, string keyId, string token)
+        {
+            if (string.IsNullOrEmpty(keyGroup) || string.IsNullOrEmpty(keyId) || string.IsNullOrEmpty(token))
+            {
+                return new BadRequestObjectResult("Missing parameters");
+            }
+
+            if (!_streamingTokenHelper.ValidateToken(token))
+            {
+                return new UnauthorizedResult();
+            }
+
+            var keyBytes = await _keyRepository.GetKeyAsync(keyGroup, keyId);
+            var stream = new MemoryStream(keyBytes);
+            return new FileStreamResult(stream, "binary/octet-stream");
+        }
+
+        [HttpPost]
+        [HttpGet]
+        [Route("/api/widevine/getLicense")]
+        [EnableCors("All")]
+        public async Task<IActionResult> GetLicense(string token)
         {
             var json = await new StreamReader(Request.Body).ReadToEndAsync();
-            string token = Request.Query["token"];
             if (string.IsNullOrEmpty(json) || string.IsNullOrEmpty(token))
             {
                 return new BadRequestObjectResult("Missing parameters");
