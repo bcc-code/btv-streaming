@@ -1,4 +1,5 @@
 using LivestreamFunctions.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,34 +9,26 @@ using System.Threading.Tasks;
 namespace LivestreamFunctions
 {
     [ApiController]
-    [Route("urls")]
-    public class GetStreamUrl : ControllerBase
+    [Route("api/urls")]
+    [Authorize]
+    public class UrlController : ControllerBase
     {
-        public readonly OAuthValidator _oAuthValidator;
         private readonly StreamingTokenHelper _streamingTokenHelper;
         private readonly string _topLevelManifestBaseURL = "https://btvliveproxy.azurewebsites.net/api/TopLevelManifest";
 
-        public GetStreamUrl(OAuthValidator oAuthValidator, StreamingTokenHelper streamingTokenHelper)
+        public UrlController(StreamingTokenHelper streamingTokenHelper)
         {
-            _oAuthValidator = oAuthValidator;
             _streamingTokenHelper = streamingTokenHelper;
         }
 
         [HttpGet("live")]
         [EnableCors("All")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetHls()
         {
-            var jwt = Request.Headers["Authorization"].ToString().Replace("Bearer ", "", StringComparison.InvariantCultureIgnoreCase);
-            if (!await _oAuthValidator.ValidateToken(jwt))
-            {
-                return new UnauthorizedResult();
-            }
-
             string streamingToken = Request.Query["token"];
             if (!string.IsNullOrEmpty(streamingToken))
             {
                 streamingToken = new string(streamingToken.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_').ToArray());
-                // do country check
             }
             else
             {
@@ -50,14 +43,7 @@ namespace LivestreamFunctions
         public async Task<IActionResult> GetLiveAudioOnlyUrl()
         {
             string language = Request.Query["language"];
-            var jwt = Request.Headers["Authorization"].ToString().Replace("Bearer ", "", StringComparison.InvariantCultureIgnoreCase);
-            if (!await _oAuthValidator.ValidateToken(jwt))
-            {
-                return new UnauthorizedResult();
-            }
-
-            var url = _topLevelManifestBaseURL + "?audio_only=true";
-            url += "&someParam=.m3u8";
+            var url = _topLevelManifestBaseURL + "?audio_only=true&someParam=.m3u8";
 
             if (!string.IsNullOrWhiteSpace(language))
             {
