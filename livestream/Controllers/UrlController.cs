@@ -24,26 +24,24 @@ namespace LivestreamFunctions
 
         [HttpGet("live")]
         [EnableCors("All")]
-        public IActionResult GetHls()
+        public IActionResult GetHls(string token = null)
         {
-            string streamingToken = Request.Query["token"];
-            if (!string.IsNullOrEmpty(streamingToken))
+            if (!string.IsNullOrEmpty(token))
             {
-                streamingToken = new string(streamingToken.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_').ToArray());
+                token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_').ToArray());
             }
             else
             {
-                streamingToken = _streamingTokenHelper.Generate();
+                token = _streamingTokenHelper.Generate();
             }
 
-            return new OkObjectResult(new { url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + streamingToken });
+            return new OkObjectResult(new { url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + token });
         }
 
         [HttpGet("live-audio")]
         [EnableCors("All")]
-        public IActionResult GetLiveAudioOnlyUrl()
+        public IActionResult GetLiveAudioOnlyUrl(string language = null)
         {
-            string language = Request.Query["language"];
             var url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme);
             url += "?audio_only=true&someParam=.m3u8";
 
