@@ -4,6 +4,7 @@ using Amazon.S3;
 using LazyCache;
 using LivestreamFunctions.Model;
 using LivestreamFunctions.Services;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -81,11 +82,20 @@ namespace LivestreamFunctions
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             });
+
+            services.AddApplicationInsightsTelemetry(options => {
+                options.ConnectionString = Configuration.GetConnectionString("ApplicationInsights");
+                options.EnableAdaptiveSampling = false;
+            });
+            services.AddSingleton<ITelemetryInitializer, RemoveTokensTelemetryInitializer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TelemetryConfiguration telemetryConfiguration)
         {
+            telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder
+                .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 1);
+
             app.UseForwardedHeaders();
             app.UseRouting();
             app.UseAuthentication();
