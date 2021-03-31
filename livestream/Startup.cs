@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using LazyCache;
+using LivestreamFunctions.Model;
 using LivestreamFunctions.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace LivestreamFunctions
 {
@@ -36,10 +38,17 @@ namespace LivestreamFunctions
             var s3KeyBucketName = Configuration["S3KeyBucketName"];
             var dashKeyGroup = Configuration["DASHKeyGroup"];
 
+            var livestreamOptions = new LivestreamOptions();
+            services.AddOptions<LivestreamOptions>().Bind(Configuration.GetSection(LivestreamOptions.ConfigurationSection));
+
+
+            services.AddControllers();
             services.AddHttpClient();
             services.AddLazyCache();
             services.AddSingleton(_ => new StreamingTokenHelper(jwtVerificationKey));
             services.AddSingleton(s => new KeyRepository(s.GetRequiredService<IAppCache>(), s.GetRequiredService<IAmazonS3>(), s3KeyBucketName, dashKeyGroup));
+            services.AddSingleton<HlsProxyService>();
+            services.AddLogging();
 
             var awsCredentials = new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);
             services.AddSingleton<IAmazonS3>((s) => new AmazonS3Client(awsCredentials, RegionEndpoint.EUNorth1));
@@ -52,7 +61,7 @@ namespace LivestreamFunctions
 
             services.AddAuthorization(options => {
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes("bcc-jwt")
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .Build();
             });
@@ -61,12 +70,10 @@ namespace LivestreamFunctions
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer("bcc-jwt", options => {
-                options.Authority = Configuration["Oidc:Authority"];
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
+                options.Authority = Configuration["OidcAuthority"];
                 options.TokenValidationParameters.ValidateAudience = false;
             });
-
-            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,9 @@
+using LivestreamFunctions.Model;
 using LivestreamFunctions.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,16 +16,15 @@ namespace LivestreamFunctions
     public class UrlController : ControllerBase
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
-        private readonly string _topLevelManifestBaseURL = "https://btvliveproxy.azurewebsites.net/api/TopLevelManifest";
 
-        public UrlController(StreamingTokenHelper streamingTokenHelper)
+        public UrlController(StreamingTokenHelper streamingTokenHelper, IOptions<LivestreamOptions> liveOptions)
         {
             _streamingTokenHelper = streamingTokenHelper;
         }
 
         [HttpGet("live")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetHls()
+        public IActionResult GetHls()
         {
             string streamingToken = Request.Query["token"];
             if (!string.IsNullOrEmpty(streamingToken))
@@ -35,15 +36,16 @@ namespace LivestreamFunctions
                 streamingToken = _streamingTokenHelper.Generate();
             }
 
-            return new OkObjectResult(new { url = _topLevelManifestBaseURL + "?token=" + streamingToken });
+            return new OkObjectResult(new { url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + streamingToken });
         }
 
         [HttpGet("live-audio")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetLiveAudioOnlyUrl()
+        public IActionResult GetLiveAudioOnlyUrl()
         {
             string language = Request.Query["language"];
-            var url = _topLevelManifestBaseURL + "?audio_only=true&someParam=.m3u8";
+            var url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme);
+            url += "?audio_only=true&someParam=.m3u8";
 
             if (!string.IsNullOrWhiteSpace(language))
             {
