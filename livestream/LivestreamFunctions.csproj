@@ -11,12 +11,14 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <UserSecretsId>e132fbb1-d795-4958-8b9e-b2a448c601da</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/304b13b9-d4b5-4016-bb0c-52b4b37213e0/resourcegroups/btv-streaming/providers/Microsoft.Insights/components/LivestreamFunctions</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.Core" Version="3.5.3.9" />
     <PackageReference Include="AWSSDK.S3" Version="3.5.10.2" />
     <PackageReference Include="LazyCache.AspNetCore" Version="2.1.3" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
