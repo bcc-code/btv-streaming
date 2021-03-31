@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,7 @@ namespace LivestreamFunctions
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             // Note that this config can come from your user secret for development or from the environment
             var jwtVerificationKey = Configuration["BrunstadTVJWTVerificationKey"];
             var oidcAuthority = Configuration["OidcAuthority"];
@@ -40,8 +42,6 @@ namespace LivestreamFunctions
 
             var livestreamOptions = new LivestreamOptions();
             services.AddOptions<LivestreamOptions>().Bind(Configuration.GetSection(LivestreamOptions.ConfigurationSection));
-
-
             services.AddControllers();
             services.AddHttpClient();
             services.AddLazyCache();
@@ -53,7 +53,6 @@ namespace LivestreamFunctions
             var awsCredentials = new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);
             services.AddSingleton<IAmazonS3>((s) => new AmazonS3Client(awsCredentials, RegionEndpoint.EUNorth1));
             services.AddCors(options => {
-                // TODO: What is the correct CORS setup for this functions?
                 options.AddPolicy("All", builder => {
                     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
@@ -74,11 +73,18 @@ namespace LivestreamFunctions
                 options.Authority = Configuration["OidcAuthority"];
                 options.TokenValidationParameters.ValidateAudience = false;
             });
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
