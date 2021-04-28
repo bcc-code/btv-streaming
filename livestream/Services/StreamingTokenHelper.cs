@@ -13,23 +13,21 @@ namespace LivestreamFunctions.Services
             _JWTVerificationKey = JWTVerificationKey;
         }
 
-        internal string Generate()
+        public string Generate(DateTimeOffset expiryTime)
         {
-            var expirationDate = DateTime.Now.AddHours(6);
-
             var securityKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(_JWTVerificationKey));
             var signingCredentials = new SigningCredentials(
                 securityKey,
                 SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(issuer: "https://brunstad.tv", audience: "urn:brunstadtv", notBefore: DateTime.Now.AddMinutes(-5), expires: expirationDate, signingCredentials: signingCredentials);
+            var token = new JwtSecurityToken(issuer: "https://brunstad.tv", audience: "urn:brunstadtv", notBefore: DateTime.Now.AddMinutes(-5), expires: expiryTime.UtcDateTime, signingCredentials: signingCredentials);
             var handler = new JwtSecurityTokenHandler();
             var tokenString = handler.WriteToken(token);
 
             return tokenString;
         }
 
-        internal bool ValidateToken(string token)
+        public bool ValidateToken(string token)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(_JWTVerificationKey));
 

@@ -24,23 +24,28 @@ namespace LivestreamFunctions
 
         [HttpGet("live")]
         [EnableCors("All")]
-        public IActionResult GetHls(string token = null)
+        public ActionResult<UrlDto> GetHls(string token = null)
         {
+            DateTimeOffset? expiryTime = null;
             if (!string.IsNullOrEmpty(token))
             {
                 token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_').ToArray());
             }
             else
             {
-                token = _streamingTokenHelper.Generate();
+                expiryTime = DateTimeOffset.UtcNow.AddHours(6);
+                token = _streamingTokenHelper.Generate(expiryTime.Value);
             }
 
-            return new OkObjectResult(new { url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + token });
+            return new UrlDto {
+                Url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + token,
+                ExpiryTime = expiryTime
+            };
         }
 
         [HttpGet("live-audio")]
         [EnableCors("All")]
-        public IActionResult GetLiveAudioOnlyUrl(string language = null)
+        public ActionResult<UrlDto> GetLiveAudioOnlyUrl(string language = null)
         {
             var url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme);
             url += "?audio_only=true&someParam=.m3u8";
@@ -51,9 +56,14 @@ namespace LivestreamFunctions
                 url += $"&language={language}";
             }
 
-            var streamingToken = _streamingTokenHelper.Generate();
+            var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
+            var streamingToken = _streamingTokenHelper.Generate(expiryTime);
             url += $"&token={streamingToken}";
-            return new OkObjectResult(new { url });
+
+            return new UrlDto {
+                Url = url,
+                ExpiryTime = expiryTime
+            };
         }
     }
 
