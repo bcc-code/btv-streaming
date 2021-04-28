@@ -17,7 +17,7 @@ steps:
       - push
       - '$_IMAGE_NAME:$COMMIT_SHA'
     id: Push
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     args:
       - run
       - services
