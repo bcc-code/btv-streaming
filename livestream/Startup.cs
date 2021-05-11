@@ -93,9 +93,6 @@ namespace LivestreamFunctions
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TelemetryConfiguration telemetryConfiguration)
         {
-            telemetryConfiguration.TelemetryProcessorChainBuilder
-                .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 0.1)
-                .Build();
             telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder
                 .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 0.1)
                 .Build();
