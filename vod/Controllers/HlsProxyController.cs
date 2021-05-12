@@ -18,27 +18,32 @@ namespace VODFunctions
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
         private readonly HlsProxyService _proxyService;
-        private readonly LivestreamOptions _liveOptions;
+        private readonly VODOptions _liveOptions;
 
-        public HlsProxyController(StreamingTokenHelper streamingTokenHelper, HlsProxyService proxyService, IOptions<LivestreamOptions> options)
+        public HlsProxyController(StreamingTokenHelper streamingTokenHelper, HlsProxyService proxyService, IOptions<VODOptions> options)
         {
             _streamingTokenHelper = streamingTokenHelper;
-            _proxyService = proxyService;
             _liveOptions = options.Value;
         }
 
+        [HttpGet("/api/vod/toplevelmanifest")]
         [HttpGet("top-level")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetTopLevelManifest(string token, bool audio_only = false, string language = null)
+        public async Task<IActionResult> GetTopLevelManifest(string playbackUrl, string token, bool max720p = false, bool audio_only = false, string language = null)
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(playbackUrl) || string.IsNullOrWhiteSpace(token))
             {
                 return new BadRequestObjectResult("Missing parameters");
             }
 
-            var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme); ;
+            if (!_streamingTokenHelper.ValidateToken(token))
+            {
+                return new UnauthorizedResult();
+            }
 
-            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(_liveOptions.HlsUrl, token, secondLevelProxyUrl);
+            var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);
+
+            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(playbackUrl, token, secondLevelProxyUrl);
             if (audio_only)
             {
                 manifest = _proxyService.ModifyManifestToBeAudioOnly(manifest, language);
@@ -55,10 +60,20 @@ namespace VODFunctions
 
         [HttpGet("second-level")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetSecondLevelManifest(string token, string url)
+        public async Task<IActionResult> GetSecondLevelManifest(string playbackUrl, string token)
         {
+            if (string.IsNullOrWhiteSpace(playbackUrl) || string.IsNullOrWhiteSpace(token))
+            {
+                return new BadRequestObjectResult("Missing parameters");
+            }
+
+            if (!_streamingTokenHelper.ValidateToken(token))
+            {
+                return new UnauthorizedResult();
+            }
+
             var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
-            var host = new Uri(url).Host.ToLower();
+            var host = new Uri(playbackUrl).Host.ToLower();
             if (host != allowedHost)
             {
                 return new BadRequestObjectResult("Invalid url, only URLS with '" + allowedHost + "' as host are allowed.");
@@ -75,7 +90,7 @@ namespace VODFunctions
                 return keyDeliveryBaseUrl + $"/{group}/{keyId}?token={urlEncodedToken}";
             }
 
-            var manifest = await _proxyService.RetrieveAndModifySecondLevelManifestAsync(url, generateKeyDeliveryUrl);
+            var manifest = await _proxyService.RetrieveAndModifySecondLevelManifestAsync(playbackUrl, token);
 
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue

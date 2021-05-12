@@ -41,8 +41,8 @@ namespace VODFunctions
             var s3KeyBucketName = Configuration["S3KeyBucketName"];
             var dashKeyGroup = Configuration["DASHKeyGroup"];
 
-            var livestreamOptions = new LivestreamOptions();
-            services.AddOptions<LivestreamOptions>().Bind(Configuration.GetSection(LivestreamOptions.ConfigurationSection));
+            var livestreamOptions = new VODOptions();
+            services.AddOptions<VODOptions>().Bind(Configuration.GetSection(VODOptions.ConfigurationSection));
             services.AddControllers();
             services.AddHttpClient();
             services.AddLazyCache();

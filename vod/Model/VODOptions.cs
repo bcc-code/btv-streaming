@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace VODFunctions.Model
 {
-    public class LivestreamOptions
+    public class VODOptions
     {
-        public const string ConfigurationSection = "Live";
+        public const string ConfigurationSection = "VOD";
         public string HlsUrl { get; set; }
     }
 }

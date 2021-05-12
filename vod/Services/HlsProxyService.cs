@@ -78,18 +78,23 @@ namespace VODFunctions.Services
             return newManifest;
         }
 
-        public async Task<string> RetrieveAndModifySecondLevelManifestAsync(string url, Func<string, string, string> generateKeyDeliveryUrl)
+        public async Task<string> RetrieveAndModifySecondLevelManifestAsync(string url, string token)
         {
-            const string playlistRegex = @"(index_.+_\d+\.(ts|aac))";
-            const string urlRegex = @"(?:URI=).https?:\/\/[\da-z\.]+\.[a-z\.]{2,6}[\/\w \.-](.+)\/(.+).";
-            // The regex captures URI="https://blab123labla.anything.anything.anything/{1}/{2}"
+            var manifest = await GetRawContentAsync(url);
 
-            var baseUrl = url.Substring(0, url.IndexOf("/index", StringComparison.OrdinalIgnoreCase));
-            var content = await GetRawContentAsync(url);
+            // Keydelivery url, add token
+            manifest = Regex.Replace(manifest, @"^#EXT-X-KEY:METHOD=AES-128,URI="".+?(?="")", m => m.Value + "?token={token}");
 
-            var newContent = Regex.Replace(content, urlRegex, m => $"URI=\"{generateKeyDeliveryUrl(m.Groups[1].Value, m.Groups[2].Value)}\"");
-            newContent = Regex.Replace(newContent, playlistRegex, m => string.Format(CultureInfo.InvariantCulture, baseUrl + "/" + m.Value));
-            return newContent;
+            // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.1
+            // Lines not starting with # is a file/playlist url.
+            // If relative, make it absolute.
+            manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", m => GetAbsoluteBaseUrl(url) + "/" + m.Value);
+            return manifest;
+        }
+
+        private static string GetAbsoluteBaseUrl(string url)
+        {
+            return url.Substring(0, url.IndexOf(".ism", StringComparison.OrdinalIgnoreCase)) + ".ism";
         }
 
 
