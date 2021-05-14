@@ -1,9 +1,6 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
-using LazyCache;
-using VODFunctions.Model;
-using VODFunctions.Services;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using VODFunctions.Model;
+using VODFunctions.Services;
 
 namespace VODFunctions
 {
@@ -47,7 +42,6 @@ namespace VODFunctions
             services.AddHttpClient();
             services.AddLazyCache();
             services.AddSingleton(_ => new StreamingTokenHelper(jwtVerificationKey));
-            services.AddSingleton(s => new KeyRepository(s.GetRequiredService<IAppCache>(), s.GetRequiredService<IAmazonS3>(), s3KeyBucketName, dashKeyGroup));
             services.AddSingleton<HlsProxyService>();
             services.AddLogging();
 
@@ -75,8 +69,7 @@ namespace VODFunctions
                 options.TokenValidationParameters.ValidateAudience = false;
             });
 
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
+            services.Configure<ForwardedHeadersOptions>(options => {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                 options.KnownNetworks.Clear();
@@ -94,7 +87,7 @@ namespace VODFunctions
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TelemetryConfiguration telemetryConfiguration)
         {
             telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder
-                .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 0.1)
+                .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 1)
                 .Build();
 
             app.UseForwardedHeaders();

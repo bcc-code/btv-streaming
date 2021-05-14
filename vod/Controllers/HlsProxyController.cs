@@ -1,14 +1,15 @@
-using VODFunctions.Model;
-using VODFunctions.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
 using Microsoft.Net.Http.Headers;
+using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using VODFunctions.Model;
+using VODFunctions.Services;
 
 namespace VODFunctions
 {
@@ -18,12 +19,14 @@ namespace VODFunctions
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
         private readonly HlsProxyService _proxyService;
-        private readonly VODOptions _liveOptions;
+        private readonly VODOptions _vodOptions;
 
-        public HlsProxyController(StreamingTokenHelper streamingTokenHelper, HlsProxyService proxyService, IOptions<VODOptions> options)
+        public HlsProxyController(StreamingTokenHelper streamingTokenHelper,
+            HlsProxyService proxyService,
+            IOptions<VODOptions> options)
         {
             _streamingTokenHelper = streamingTokenHelper;
-            _liveOptions = options.Value;
+            _vodOptions = options.Value;
         }
 
         [HttpGet("/api/vod/toplevelmanifest")]
@@ -41,9 +44,17 @@ namespace VODFunctions
                 return new UnauthorizedResult();
             }
 
+            token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == '-').ToArray());
+
             var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);
 
-            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(playbackUrl, token, secondLevelProxyUrl);
+            var manifest = await _proxyService.GetManifestAsync(playbackUrl);
+            manifest = await _proxyService.ModifyTopLevelManifestForToken(
+                manifest,
+                playbackUrl,
+                token,
+                ((string originalUrl, string token) a) => $"{secondLevelProxyUrl}?url={a.originalUrl}&token={a.token}");
+
             if (audio_only)
             {
                 manifest = _proxyService.ModifyManifestToBeAudioOnly(manifest, language);
@@ -72,7 +83,7 @@ namespace VODFunctions
                 return new UnauthorizedResult();
             }
 
-            var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
+            var allowedHost = new Uri(_vodOptions.HlsUrl).Host.ToLower();
             var host = new Uri(playbackUrl).Host.ToLower();
             if (host != allowedHost)
             {
@@ -83,20 +94,13 @@ namespace VODFunctions
                 return new BadRequestObjectResult("Missing parameters");
             }
 
-            var keyDeliveryBaseUrl = $"{Request.Scheme}://{Request.Host}/api/keydelivery";
-            var urlEncodedToken = HttpUtility.UrlEncode(token);
-            string generateKeyDeliveryUrl(string group, string keyId)
-            {
-                return keyDeliveryBaseUrl + $"/{group}/{keyId}?token={urlEncodedToken}";
-            }
-
             var manifest = await _proxyService.RetrieveAndModifySecondLevelManifestAsync(playbackUrl, token);
 
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
             {
-                Public = true,
-                MaxAge = TimeSpan.FromSeconds(0)
+                NoStore = true,
+                MaxAge = TimeSpan.FromSeconds(0),
             };
             return Content(manifest, "application/vnd.apple.mpegurl", Encoding.UTF8);
         }

@@ -21,8 +21,7 @@ namespace VODFunctions
 
         public static IHostBuilder CreateHostBuilder(string urls, string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
+                .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder
                     .UseStartup<Startup>()
                     .UseUrls(urls);
