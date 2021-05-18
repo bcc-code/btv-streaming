@@ -7,9 +7,9 @@ steps:
       - '$_IMAGE_NAME:$COMMIT_SHA'
       - '-t'
       - '$_IMAGE_NAME:$BRANCH_NAME'
-      - livestream
+      - vod
       - '-f'
-      - livestream/Dockerfile
+      - vod/Dockerfile
     id: Build
     timeout: 8000s
   - name: gcr.io/cloud-builders/docker
@@ -39,4 +39,4 @@ options:
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
-  - brunstadtv-livestream
+  - brunstadtv-vod-functions

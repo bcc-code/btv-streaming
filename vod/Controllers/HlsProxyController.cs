@@ -14,7 +14,7 @@ using VODFunctions.Services;
 namespace VODFunctions
 {
     [ApiController]
-    [Route("api/hls-proxy")]
+    [Route("api/vod")]
     public class HlsProxyController : ControllerBase
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
@@ -26,39 +26,42 @@ namespace VODFunctions
             IOptions<VODOptions> options)
         {
             _streamingTokenHelper = streamingTokenHelper;
+            _proxyService = proxyService;
             _vodOptions = options.Value;
         }
 
-        [HttpGet("/api/vod/toplevelmanifest")]
-        [HttpGet("top-level")]
+        [HttpGet("toplevelmanifest")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetTopLevelManifest(string playbackUrl, string token, bool max720p = false, bool audio_only = false, string language = null)
+        public async Task<IActionResult> GetTopLevelManifest(string playbackUrl,
+            string token,
+            bool subs = true,
+            bool max720p = false,
+            bool audioOnly = false,
+            string language = null)
         {
             if (string.IsNullOrWhiteSpace(playbackUrl) || string.IsNullOrWhiteSpace(token))
             {
                 return new BadRequestObjectResult("Missing parameters");
             }
 
-            if (!_streamingTokenHelper.ValidateToken(token))
+            var allowedHost = "vod.brunstad.tv";
+            var host = new Uri(playbackUrl).Host.ToLower();
+            if (host != allowedHost)
             {
-                return new UnauthorizedResult();
+                return new BadRequestObjectResult("Invalid url, host not allowed.");
             }
 
             token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == '-').ToArray());
 
-            var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);
-
-            var manifest = await _proxyService.GetManifestAsync(playbackUrl);
-            manifest = await _proxyService.ModifyTopLevelManifestForToken(
-                manifest,
+            var manifest = await _proxyService.ProxyTopLevelAsync(
+                GetSecondLevelProxyUrl,
+                GetSubtitleManifestUrl,
                 playbackUrl,
                 token,
-                ((string originalUrl, string token) a) => $"{secondLevelProxyUrl}?url={a.originalUrl}&token={a.token}");
-
-            if (audio_only)
-            {
-                manifest = _proxyService.ModifyManifestToBeAudioOnly(manifest, language);
-            }
+                subs,
+                max720p,
+                audioOnly,
+                language);
 
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
@@ -69,7 +72,13 @@ namespace VODFunctions
             return Content(manifest, "application/vnd.apple.mpegurl", Encoding.UTF8);
         }
 
-        [HttpGet("second-level")]
+        public string GetSecondLevelProxyUrl((string originalUrl, string token) args)
+        {
+            var secondLevelProxyUrl = Url.Action(nameof(GetSecondLevelManifest), null, null, Request.Scheme);
+            return $"{secondLevelProxyUrl}?playbackUrl={HttpUtility.UrlEncode(args.originalUrl)}&token={HttpUtility.UrlEncode(args.token)}";
+        }
+
+        [HttpGet("secondlevelmanifest")]
         [EnableCors("All")]
         public async Task<IActionResult> GetSecondLevelManifest(string playbackUrl, string token)
         {
@@ -78,23 +87,16 @@ namespace VODFunctions
                 return new BadRequestObjectResult("Missing parameters");
             }
 
-            if (!_streamingTokenHelper.ValidateToken(token))
-            {
-                return new UnauthorizedResult();
-            }
-
-            var allowedHost = new Uri(_vodOptions.HlsUrl).Host.ToLower();
+            var allowedHost = "vod.brunstad.tv";
             var host = new Uri(playbackUrl).Host.ToLower();
             if (host != allowedHost)
             {
-                return new BadRequestObjectResult("Invalid url, only URLS with '" + allowedHost + "' as host are allowed.");
-            }
-            if (string.IsNullOrEmpty(token))
-            {
-                return new BadRequestObjectResult("Missing parameters");
+                return new BadRequestObjectResult("Invalid url, host not allowed.");
             }
 
-            var manifest = await _proxyService.RetrieveAndModifySecondLevelManifestAsync(playbackUrl, token);
+            token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == '-').ToArray());
+
+            var manifest = await _proxyService.ProxySecondLevelAsync(playbackUrl, token);
 
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
@@ -105,6 +107,31 @@ namespace VODFunctions
             return Content(manifest, "application/vnd.apple.mpegurl", Encoding.UTF8);
         }
 
+        public string GetSubtitleManifestUrl(string fileUrl)
+        {
+            var secondLevelProxyUrl = Url.Action(nameof(GetSubtitleManifest), null, null, Request.Scheme);
+            return $"{secondLevelProxyUrl}?subs={HttpUtility.UrlEncode(fileUrl)}";
+        }
+
+        [HttpGet("subtitles")]
+        [EnableCors("All")]
+        public IActionResult GetSubtitleManifest(string subs)
+        {
+            if (string.IsNullOrWhiteSpace(subs))
+            {
+                return new BadRequestObjectResult("Missing parameters");
+            }
+
+            var manifest = _proxyService.GenerateSubtitleManifest(subs);
+
+            Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+            {
+                NoStore = false,
+                MaxAge = TimeSpan.FromSeconds(60)
+            };
+            return Content(manifest, "application/vnd.apple.mpegurl", Encoding.UTF8);
+        }
 
     }
 }

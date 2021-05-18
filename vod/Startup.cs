@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
+using LazyCache;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -26,8 +27,7 @@ namespace VODFunctions
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            // Note that this config can come from your user secret for development or from the environment
+            // Note that this config can come from your user secrets for development or from the environment
             var jwtVerificationKey = Configuration["BrunstadTVJWTVerificationKey"];
             var oidcAuthority = Configuration["OidcAuthority"];
 
@@ -36,13 +36,20 @@ namespace VODFunctions
             var s3KeyBucketName = Configuration["S3KeyBucketName"];
             var dashKeyGroup = Configuration["DASHKeyGroup"];
 
-            var livestreamOptions = new VODOptions();
+            var storageConnectionString = Configuration.GetConnectionString("AzureStorage");
+
+            var vodOptions = new VODOptions();
             services.AddOptions<VODOptions>().Bind(Configuration.GetSection(VODOptions.ConfigurationSection));
             services.AddControllers();
             services.AddHttpClient();
+#if !DEBUG || true
             services.AddLazyCache();
+#else
+            services.AddSingleton<IAppCache, FakeAppCache>();
+#endif
             services.AddSingleton(_ => new StreamingTokenHelper(jwtVerificationKey));
             services.AddSingleton<HlsProxyService>();
+            services.AddSingleton<SubtitleService>(_ => new SubtitleService(storageConnectionString));
             services.AddLogging();
 
             var awsCredentials = new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);

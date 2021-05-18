@@ -1,9 +1,13 @@
 ![BCC.Media logo](https://storage.googleapis.com/bcc-media-public/bcc-media-logo-150.png)
 
-# Livestream functions
+# VOD functions
 
-There are 3 components in this project:
+This project consists crucial assisting functions for the VOD streaming workflow.
 
-- Urls: Deliver urls to the stream, in exchange for a bcc-signed jwt.
-- Hls proxy: Modify the HLS manifests. Most importantly, it specifies where to retrieve decryption keys.
-- KeyDelivery: Delivers decryption keys in exchange for a streaming jwt.
+- Hls proxy: Modify the HLS manifests. Most importantly it specifies where to retrieve decryption keys, but it also customizes the manifests.
+
+## Expanding this project
+
+Be very mindful of what you add to this project.
+Because VOD streaming is one of our key components, we want this project to be lightweight and only include functionality that is necessary for the playback of VOD streams.
+This is in order to minimize risk of downtime and load issues.

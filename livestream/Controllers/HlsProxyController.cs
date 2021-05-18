@@ -80,7 +80,7 @@ namespace LivestreamFunctions
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
             {
-                Public = true,
+                NoStore = true,
                 MaxAge = TimeSpan.FromSeconds(0)
             };
             return Content(manifest, "application/vnd.apple.mpegurl", Encoding.UTF8);

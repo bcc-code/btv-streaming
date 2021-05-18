@@ -2,8 +2,10 @@ using LivestreamFunctions.Model;
 using LivestreamFunctions.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,6 +39,12 @@ namespace LivestreamFunctions
                 token = _streamingTokenHelper.Generate(expiryTime.Value);
             }
 
+            Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+            {
+                NoStore = true,
+                MaxAge = TimeSpan.FromSeconds(0)
+            };
+
             return new UrlDto {
                 Url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + token,
                 ExpiryTime = expiryTime
@@ -59,6 +67,12 @@ namespace LivestreamFunctions
             var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
             var streamingToken = _streamingTokenHelper.Generate(expiryTime);
             url += $"&token={streamingToken}";
+
+            Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+            {
+                NoStore = true,
+                MaxAge = TimeSpan.FromSeconds(0)
+            };
 
             return new UrlDto {
                 Url = url,
