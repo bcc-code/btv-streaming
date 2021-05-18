@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VODFunctions.Services
+namespace VODStreaming.Services
 {
     public class FakeAppCache : IAppCache
     {

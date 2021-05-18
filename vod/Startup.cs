@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using VODFunctions.Model;
-using VODFunctions.Services;
+using VODStreaming.Model;
+using VODStreaming.Services;
 
-namespace VODFunctions
+namespace VODStreaming
 {
     public class Startup
     {
@@ -47,9 +47,8 @@ namespace VODFunctions
 #else
             services.AddSingleton<IAppCache, FakeAppCache>();
 #endif
-            services.AddSingleton(_ => new StreamingTokenHelper(jwtVerificationKey));
             services.AddSingleton<HlsProxyService>();
-            services.AddSingleton<SubtitleService>(_ => new SubtitleService(storageConnectionString));
+            services.AddSingleton(_ => new SubtitleService(storageConnectionString));
             services.AddLogging();
 
             var awsCredentials = new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);

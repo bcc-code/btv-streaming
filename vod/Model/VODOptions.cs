@@ -1,4 +1,4 @@
-namespace VODFunctions.Model
+namespace VODStreaming.Model
 {
     public class VODOptions
     {

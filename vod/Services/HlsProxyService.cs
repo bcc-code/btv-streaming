@@ -8,9 +8,9 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
-using VODFunctions.Model;
+using VODStreaming.Model;
 
-namespace VODFunctions.Services
+namespace VODStreaming.Services
 {
     public class HlsProxyService
     {

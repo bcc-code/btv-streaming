@@ -7,7 +7,7 @@ steps:
       - '$_IMAGE_NAME:$COMMIT_SHA'
       - '-t'
       - '$_IMAGE_NAME:$BRANCH_NAME'
-      - vod
+      - vod-streaming
       - '-f'
       - vod/Dockerfile
     id: Build

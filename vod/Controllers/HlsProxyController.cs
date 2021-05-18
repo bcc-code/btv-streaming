@@ -8,24 +8,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using VODFunctions.Model;
-using VODFunctions.Services;
+using VODStreaming.Model;
+using VODStreaming.Services;
 
-namespace VODFunctions
+namespace VODStreaming
 {
     [ApiController]
     [Route("api/vod")]
     public class HlsProxyController : ControllerBase
     {
-        private readonly StreamingTokenHelper _streamingTokenHelper;
         private readonly HlsProxyService _proxyService;
         private readonly VODOptions _vodOptions;
 
-        public HlsProxyController(StreamingTokenHelper streamingTokenHelper,
-            HlsProxyService proxyService,
-            IOptions<VODOptions> options)
+        public HlsProxyController(HlsProxyService proxyService, IOptions<VODOptions> options)
         {
-            _streamingTokenHelper = streamingTokenHelper;
             _proxyService = proxyService;
             _vodOptions = options.Value;
         }

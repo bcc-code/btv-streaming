@@ -5,16 +5,16 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
-COPY ["VODFunctions.csproj", ""]
-RUN dotnet restore "./VODFunctions.csproj"
+COPY ["VODStreaming.csproj", ""]
+RUN dotnet restore "./VODStreaming.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "VODFunctions.csproj" -c Release -o /app/build
+RUN dotnet build "VODStreaming.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "VODFunctions.csproj" -c Release -o /app/publish
+RUN dotnet publish "VODStreaming.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "VODFunctions.dll"]
+ENTRYPOINT ["dotnet", "VODStreaming.dll"]

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VODFunctions.Model;
+using VODStreaming.Model;
 
-namespace VODFunctions.Services
+namespace VODStreaming.Services
 {
     public class SubtitleService
     {

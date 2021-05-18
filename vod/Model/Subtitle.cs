@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VODFunctions.Model
+namespace VODStreaming.Model
 {
     public class Subtitle
     {

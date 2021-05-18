@@ -4,7 +4,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using System;
 using System.Web;
 
-namespace VODFunctions.Services
+namespace VODStreaming.Services
 {
     // Use telemetry initializers to enrich telemetry with additional properties or override an existing one. Use a telemetry processor to filter out telemetry.
     // https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-filtering-sampling#itelemetryprocessor-and-itelemetryinitializer
