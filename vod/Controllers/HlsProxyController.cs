@@ -41,10 +41,11 @@ namespace VODStreaming
             }
 
             var allowedHost = "vod.brunstad.tv";
-            var host = new Uri(playbackUrl).Host.ToLower();
-            if (host != allowedHost)
+            Uri.TryCreate(playbackUrl, UriKind.Absolute, out var uri);
+            var host = uri?.Host.ToLower();
+            if (host == null || host != allowedHost)
             {
-                return new BadRequestObjectResult("Invalid url, host not allowed.");
+                return new BadRequestObjectResult("Invalid url or host not allowed.");
             }
 
             token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == '-').ToArray());
@@ -84,10 +85,11 @@ namespace VODStreaming
             }
 
             var allowedHost = "vod.brunstad.tv";
-            var host = new Uri(playbackUrl).Host.ToLower();
-            if (host != allowedHost)
+            Uri.TryCreate(playbackUrl, UriKind.Absolute, out var uri);
+            var host = uri?.Host.ToLower();
+            if (host == null || host != allowedHost)
             {
-                return new BadRequestObjectResult("Invalid url, host not allowed.");
+                return new BadRequestObjectResult("Invalid url or host not allowed.");
             }
 
             token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == '-').ToArray());
