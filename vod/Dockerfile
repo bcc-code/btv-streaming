@@ -9,10 +9,10 @@ COPY ["VODStreaming.csproj", ""]
 RUN dotnet restore "./VODStreaming.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "VODStreaming.csproj" -c Release -o /app/build
+RUN dotnet build "VODStreaming.csproj" -c Release -o /app/build -r linux-x64
 
 FROM build AS publish
-RUN dotnet publish "VODStreaming.csproj" -c Release -o /app/publish
+RUN dotnet publish "VODStreaming.csproj" -c Release -o /app/publish -r linux-x64 -p:PublishReadyToRun=true
 
 FROM base AS final
 WORKDIR /app
