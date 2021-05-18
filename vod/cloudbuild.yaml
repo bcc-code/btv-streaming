@@ -7,7 +7,7 @@ steps:
       - '$_IMAGE_NAME:$COMMIT_SHA'
       - '-t'
       - '$_IMAGE_NAME:$BRANCH_NAME'
-      - vod-streaming
+      - vodstreaming
       - '-f'
       - vod/Dockerfile
     id: Build
@@ -39,4 +39,4 @@ options:
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
-  - brunstadtv-vod-functions
+  - brunstadtv-vodstreaming

@@ -1,17 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
-    <AssemblyName>VODFunctions</AssemblyName>
-    <RootNamespace>VODFunctions</RootNamespace>
+    <AssemblyName>VODStreaming</AssemblyName>
+    <RootNamespace>VODStreaming</RootNamespace>
     <Authors />
     <Company>BCC.Media Foundation</Company>
     <Copyright>2021 BCC.Media Foundation</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <UserSecretsId>e132fbb1-d795-4958-8b9e-b2a448c601da</UserSecretsId>
-    <ApplicationInsightsResourceId>/subscriptions/304b13b9-d4b5-4016-bb0c-52b4b37213e0/resourcegroups/btv-streaming/providers/Microsoft.Insights/components/VODFunctions</ApplicationInsightsResourceId>
+    <ApplicationInsightsResourceId>/subscriptions/304b13b9-d4b5-4016-bb0c-52b4b37213e0/resourcegroups/btv-streaming/providers/Microsoft.Insights/components/VODStreaming</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>

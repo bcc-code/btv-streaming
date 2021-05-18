@@ -1,6 +1,6 @@
 ![BCC.Media logo](https://storage.googleapis.com/bcc-media-public/bcc-media-logo-150.png)
 
-# VOD functions
+# VOD streaming functions
 
 This project consists crucial assisting functions for the VOD streaming workflow.
 
