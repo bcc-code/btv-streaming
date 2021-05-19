@@ -244,6 +244,10 @@ namespace VODStreaming.Services
             var client = _httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(30);
             var response = await client.SendAsync(httpRequest);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("GetRawContents Failed. Inner exception is the response body.", new Exception(await response.Content.ReadAsStringAsync()));
+            }
             return await response.Content.ReadAsStringAsync();
         }
     }
