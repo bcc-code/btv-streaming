@@ -1,4 +1,5 @@
 using Azure.Storage.Blobs;
+using LazyCache;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,24 @@ namespace VODStreaming.Services
     public class SubtitleService
     {
         private readonly BlobServiceClient _serviceClient;
+        private readonly IAppCache _appCache;
 
-        public SubtitleService(string connectionString)
+        public SubtitleService(string connectionString, IAppCache appCache)
         {
             _serviceClient = new BlobServiceClient(connectionString);
+            _appCache = appCache;
         }
 
-        public async Task<List<Subtitle>> GetByVideoFileName(string filename)
+        public async Task<List<Subtitle>> GetCachedByVideoFileName(string filename)
+        {
+            return await _appCache.GetOrAddAsync(
+                "subtitles_" + filename.ToLowerInvariant(),
+                async () => await GetByVideoFileName(filename),
+                DateTimeOffset.UtcNow.AddMinutes(60)
+            );
+        }
+
+        private async Task<List<Subtitle>> GetByVideoFileName(string filename)
         {
             var container = _serviceClient.GetBlobContainerClient("subtitles");
 

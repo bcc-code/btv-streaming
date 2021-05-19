@@ -48,7 +48,7 @@ namespace VODStreaming
             services.AddSingleton<IAppCache, FakeAppCache>();
 #endif
             services.AddSingleton<HlsProxyService>();
-            services.AddSingleton(_ => new SubtitleService(storageConnectionString));
+            services.AddSingleton(s => new SubtitleService(storageConnectionString, s.GetRequiredService<IAppCache>()));
             services.AddLogging();
 
             var awsCredentials = new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);

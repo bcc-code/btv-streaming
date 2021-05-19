@@ -50,10 +50,18 @@ namespace VODStreaming.Services
             }
 
             var manifest = await _appCache.GetOrAddAsync(
-                $"toplevelmanifest-customized_{manifestUrl}_{subs}_{max720p}_{audioOnly}_{language}",
+                $"toplevelmanifest-customized_{manifestUrl.ToLowerInvariant()}_{subs}_{max720p}_{audioOnly}_{language}",
                 async () => {
                     var manifest = await GetManifestAsync(manifestUrl);
-                    return await CustomizeTopLevelManifestAsync(getSecondLevelProxyUrl, getSubtitleProxyUrl, manifest, manifestUrl, subs, max720p, audioOnly, language);
+                    return await CustomizeTopLevelManifestAsync(
+                        getSecondLevelProxyUrl,
+                        getSubtitleProxyUrl,
+                        manifest,
+                        manifestUrl,
+                        subs,
+                        max720p,
+                        audioOnly,
+                        language);
                 },
                 DateTimeOffset.UtcNow.AddSeconds(30)
             );
@@ -125,7 +133,7 @@ namespace VODStreaming.Services
             string manifest,
             string videoFilename)
         {
-            var subs = await _subtitleService.GetByVideoFileName(videoFilename);
+            var subs = await _subtitleService.GetCachedByVideoFileName(videoFilename);
             var hasSubs = false;
 
             foreach (var sub in subs.Where(s => s.Type == "vtt"))
