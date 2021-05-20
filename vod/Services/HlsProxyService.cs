@@ -241,8 +241,8 @@ namespace VODStreaming.Services
         {
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
 
-            var client = _httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromSeconds(30);
+            var client = _httpClientFactory.CreateClient("manifests");
+            client.Timeout = TimeSpan.FromSeconds(10);
             var response = await client.SendAsync(httpRequest);
             if (!response.IsSuccessStatusCode)
             {

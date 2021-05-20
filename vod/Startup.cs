@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 using VODStreaming.Model;
 using VODStreaming.Services;
 
@@ -41,7 +42,10 @@ namespace VODStreaming
             var vodOptions = new VODOptions();
             services.AddOptions<VODOptions>().Bind(Configuration.GetSection(VODOptions.ConfigurationSection));
             services.AddControllers();
-            services.AddHttpClient();
+            services.AddHttpClient("manifests").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                MaxConnectionsPerServer = 100
+            });
 #if !DEBUG || true
             services.AddLazyCache();
 #else
