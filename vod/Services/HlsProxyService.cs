@@ -239,7 +239,7 @@ namespace VODStreaming.Services
 
         private async Task<string> GetRawContentsAsync(string uri)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
 
             var client = _httpClientFactory.CreateClient("manifests");
             client.Timeout = TimeSpan.FromSeconds(10);
