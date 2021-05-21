@@ -24,7 +24,7 @@ namespace VODStreaming.Services
             return await _appCache.GetOrAddAsync(
                 "subtitles_" + filename.ToLowerInvariant(),
                 async () => await GetByVideoFileName(filename),
-                DateTimeOffset.UtcNow.AddMinutes(60)
+                DateTimeOffset.UtcNow.AddSeconds(60)
             );
         }
 
