@@ -52,13 +52,16 @@ namespace VODStreaming
                     module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "threadpool-thread-count"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "threadpool-queue-length"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "threadpool-completed-items-count"));
-                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.NameResolution", "dns-lookups-duration"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gen-0-gc-count"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gen-1-gc-count"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gen-2-gc-count"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gc-fragmentation"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.NameResolution", "dns-lookups-duration"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Net.Sockets", "outgoing-connections-established"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.Sockets", "incoming-connections-established"));
                     module.Counters.Add(new EventCounterCollectionRequest("System.Net.Http", "current-requests"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.Http", "requests-started"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.Http", "requests-started-rate"));
                 }
             );
 
