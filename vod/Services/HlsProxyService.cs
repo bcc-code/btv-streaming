@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -249,7 +250,17 @@ namespace VODStreaming.Services
 
             var client = _httpClientFactory.CreateClient("manifests");
             client.Timeout = TimeSpan.FromSeconds(10);
-            var response = await client.SendAsync(httpRequest);
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await client.SendAsync(httpRequest);
+            } catch (SocketException)
+            {
+                await client.GetAsync("brunstad.tv");
+                throw;
+            }
+
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("GetRawContents Failed. Inner exception is the response body.", new Exception(await response.Content.ReadAsStringAsync()));

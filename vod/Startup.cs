@@ -3,6 +3,7 @@ using Amazon.Runtime;
 using Amazon.S3;
 using LazyCache;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Extensibility.EventCounterCollector;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -44,8 +45,23 @@ namespace VODStreaming
             services.AddControllers();
             services.AddHttpClient("manifests").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
-                MaxConnectionsPerServer = 100
+                MaxConnectionsPerServer = 20
             });
+            services.ConfigureTelemetryModule<EventCounterCollectionModule>(
+                (module, o) => {
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "threadpool-thread-count"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "threadpool-queue-length"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "threadpool-completed-items-count"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.NameResolution", "dns-lookups-duration"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gen-0-gc-count"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gen-1-gc-count"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gen-2-gc-count"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Runtime", "gc-fragmentation"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.Sockets", "outgoing-connections-established"));
+                    module.Counters.Add(new EventCounterCollectionRequest("System.Net.Http", "current-requests"));
+                }
+            );
+
 #if !DEBUG || true
             services.AddLazyCache();
 #else
