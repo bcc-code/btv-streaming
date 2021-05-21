@@ -11,7 +11,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <UserSecretsId>e132fbb1-d795-4958-8b9e-b2a448c601da</UserSecretsId>
-    <ApplicationInsightsResourceId>/subscriptions/304b13b9-d4b5-4016-bb0c-52b4b37213e0/resourcegroups/btv-streaming/providers/Microsoft.Insights/components/VODStreaming</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
