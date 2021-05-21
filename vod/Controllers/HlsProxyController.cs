@@ -27,6 +27,20 @@ namespace VODStreaming
             _vodOptions = options.Value;
         }
 
+        [HttpHead("subtitles")]
+        [HttpHead("toplevelmanifest")]
+        [HttpHead("secondlevelmanifest")]
+        public ActionResult GetHeadersForHeadRequests()
+        {
+            Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+            {
+                NoStore = true,
+                MaxAge = TimeSpan.FromSeconds(0)
+            };
+            return Content("", "application/vnd.apple.mpegurl", Encoding.UTF8);
+        }
+
         [HttpGet("toplevelmanifest")]
         [EnableCors("All")]
         public async Task<IActionResult> GetTopLevelManifest(string playbackUrl,
