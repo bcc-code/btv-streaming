@@ -43,7 +43,7 @@ namespace VODStreaming
             }
 
             var ua = Request.Headers["User-Agent"].ToString();
-            if (!string.IsNullOrEmpty(ua) && ua.Contains("AppleCoreMedia")) // tvOs
+            if (!string.IsNullOrEmpty(ua) && ua.Contains("Apple TV")) // tvOs
             {
                 removeAudioOnlyTrack = true;
             }
