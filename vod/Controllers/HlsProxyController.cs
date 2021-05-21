@@ -6,6 +6,7 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using VODStreaming.Model;
@@ -33,11 +34,18 @@ namespace VODStreaming
             bool subs = true,
             bool max720p = false,
             bool audioOnly = false,
+            bool removeAudioOnlyTrack = false,
             string language = null)
         {
             if (string.IsNullOrWhiteSpace(playbackUrl) || string.IsNullOrWhiteSpace(token))
             {
                 return new BadRequestObjectResult("Missing parameters");
+            }
+
+            var ua = Request.Headers["User-Agent"].ToString();
+            if (!string.IsNullOrEmpty(ua) && ua.Contains("AppleCoreMedia")) // tvOs
+            {
+                removeAudioOnlyTrack = true;
             }
 
             var allowedHost = "vod.brunstad.tv";
@@ -57,6 +65,7 @@ namespace VODStreaming
                 token,
                 subs,
                 max720p,
+                removeAudioOnlyTrack,
                 audioOnly,
                 language);
 

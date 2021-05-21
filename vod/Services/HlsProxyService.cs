@@ -40,6 +40,7 @@ namespace VODStreaming.Services
             string token,
             bool subs,
             bool max720p,
+            bool removeAudioOnlyTrack,
             bool audioOnly,
             string language)
         {
@@ -47,6 +48,11 @@ namespace VODStreaming.Services
             {
                 subs = false;
                 max720p = false;
+            }
+
+            if (removeAudioOnlyTrack)
+            {
+                manifestUrl = manifestUrl.Replace("m3u8-aapl", "m3u8-aapl,audio-only=false");
             }
 
             var manifest = await _appCache.GetOrAddAsync(
