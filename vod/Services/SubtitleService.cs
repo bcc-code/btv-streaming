@@ -92,7 +92,7 @@ namespace VODStreaming.Services
                 case "RUM":
                 case "RON":
                 case "ROU":
-                    return "Român";
+                    return "Română";
                 case "TUR":
                     return "Türk";
                 case "POL":
