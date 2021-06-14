@@ -40,7 +40,7 @@ namespace VODStreaming.Services
                     Filename = s.Name,
                     Url = container.GetBlobClient(s.Name).Uri.ToString().Replace("vods1.blob.core.windows.net/subtitles", "subtitles.brunstad.tv"),
                     Label = LabelByFilename(s.Name),
-                    LanguageCode = CodeByFilename(s.Name),
+                    LanguageCode = ThreeLetterCodeByFilename(s.Name),
                     Type = s.Name[^3..]
                 });
             }
@@ -53,9 +53,9 @@ namespace VODStreaming.Services
             return LocaleMapper.ThreeLetterCodeToName(filename.Substring(filename.Length - 7, 3)) ?? "Closed Captions";
         }
 
-        private static string CodeByFilename(string filename)
+        private static string ThreeLetterCodeByFilename(string filename)
         {
-            return LocaleMapper.ThreeLetterCodeToTwoLetterCode(filename.Substring(filename.Length - 7, 3)) ?? "unknown";
+            return filename.Substring(filename.Length - 7, 3);
         }
     }
 
