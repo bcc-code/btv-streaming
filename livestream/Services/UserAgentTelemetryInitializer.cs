@@ -29,7 +29,7 @@ namespace LivestreamFunctions.Services
                 return;
             }
 
-            requestTelemetry.Context.User.UserAgent = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.UserAgent];
+            requestTelemetry.Properties["User-Agent"] = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.UserAgent];
         }
     }
 }
