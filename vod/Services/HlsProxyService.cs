@@ -146,7 +146,7 @@ namespace VODStreaming.Services
             foreach (var sub in subs.Where(s => s.Type == "vtt"))
             {
                 hasSubs = true;
-                manifest += $"#EXT-X-MEDIA:TYPE=SUBTITLES,NAME=\"{sub.Label}\",DEFAULT=NO,AUTOSELECT=YES,FORCED=NO,LANGUAGE=\"{sub.LanguageCode}\",GROUP-ID=\"subs\",URI=\"{getSubtitleProxyUrl(sub.Url)}\"\n";
+                manifest += $"#EXT-X-MEDIA:TYPE=SUBTITLES,NAME=\"{sub.Label}\",DEFAULT=NO,AUTOSELECT=YES,FORCED=NO,LANGUAGE=\"{sub.LanguageCode?.ToLowerInvariant()}\",GROUP-ID=\"subs\",URI=\"{getSubtitleProxyUrl(sub.Url)}\"\n";
             }
 
             if (hasSubs)
