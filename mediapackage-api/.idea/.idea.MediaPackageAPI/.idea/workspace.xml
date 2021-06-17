@@ -21,8 +21,8 @@
     <changedPaths>
       <option value="$PROJECT_DIR$/MediaPackageAPI/Controllers/HarvestJobsController.cs" />
       <option value="$PROJECT_DIR$/MediaPackageAPI/Program.cs" />
-      <option value="$PROJECT_DIR$/MediaPackageAPI/appsettings.Development.json" />
       <option value="$PROJECT_DIR$/MediaPackageAPI/appsettings.json" />
+      <option value="$PROJECT_DIR$/MediaPackageAPI/appsettings.Development.json" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1u4tF7ZFcJ1oLXhlOftWsR9e5on" />
@@ -78,7 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1623936583650</updated>
       <workItem from="1623936588096" duration="146000" />
-      <workItem from="1623936743101" duration="1605000" />
+      <workItem from="1623936743101" duration="2447000" />
     </task>
     <servers />
   </component>
