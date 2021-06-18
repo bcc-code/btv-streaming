@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.MediaPackage;
 using Amazon.Runtime;
@@ -37,6 +38,7 @@ namespace MediaPackageAPI
             });
             services.AddDefaultAWSOptions(new AWSOptions
             {
+                Region =  RegionEndpoint.GetBySystemName(Configuration["AWS_REGION"]),
                 Credentials = new BasicAWSCredentials(Configuration["AWS_ACCESS_KEY_ID"],
                     Configuration["AWS_SECRET_ACCESS_KEY"])
             });
