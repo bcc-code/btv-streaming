@@ -170,6 +170,8 @@ namespace VODStreaming.Services
             manifest = Regex.Replace(manifest, @"(#EXT-X-MEDIA:TYPE=AUDIO.+)(AUTOSELECT=..S?)", (Match m) => $"{m.Groups[1].Value}AUTOSELECT=YES");
             manifest = Regex.Replace(manifest, "(#EXT-X-MEDIA:TYPE=AUDIO(?=.*?LANGUAGE=\"nor\").*?)(DEFAULT=..S?)", (Match m) => $"{m.Groups[1].Value}DEFAULT=YES");
             manifest = Regex.Replace(manifest, "(#EXT-X-MEDIA:TYPE=AUDIO(?=.*?LANGUAGE=\"nor\").*?)(AUTOSELECT=..S?)", (Match m) => $"{m.Groups[1].Value}AUTOSELECT=YES");
+            manifest = Regex.Replace(manifest, "(#EXT-X-MEDIA:TYPE=AUDIO.*?)LANGUAGE=\"fra\"", (Match m) => $"{m.Groups[1].Value}LANGUAGE=\"no-x-tolk\"");
+            manifest = Regex.Replace(manifest, "(#EXT-X-MEDIA:TYPE=AUDIO.*?)NAME=\"French\"", (Match m) => $"{m.Groups[1].Value}NAME=\"Norsk Tolk\"");
             return manifest;
         }
 
