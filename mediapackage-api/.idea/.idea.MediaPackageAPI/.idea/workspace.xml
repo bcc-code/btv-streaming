@@ -17,12 +17,19 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A8A2A901-37B0-4676-ABD8-6E858984A4E2/dd/a2b72ab7/RegionEndpoint.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
       <option value="$PROJECT_DIR$/MediaPackageAPI/Controllers/HarvestJobsController.cs" />
       <option value="$PROJECT_DIR$/MediaPackageAPI/Program.cs" />
       <option value="$PROJECT_DIR$/MediaPackageAPI/appsettings.json" />
       <option value="$PROJECT_DIR$/MediaPackageAPI/appsettings.Development.json" />
+      <option value="$PROJECT_DIR$/Dockerfile" />
+      <option value="$PROJECT_DIR$/Controllers/HarvestJobsController.cs" />
+      <option value="$PROJECT_DIR$/Startup.cs" />
+      <option value="$PROJECT_DIR$/appsettings.Development.json" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1u4tF7ZFcJ1oLXhlOftWsR9e5on" />
@@ -37,7 +44,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.MediaPackageAPI: IIS Express">
+  <component name="RunManager" selected=".NET Launch Settings Profile.MediaPackageAPI: btv_mediapackage_api">
     <configuration name="MediaPackageAPI: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/MediaPackageAPI/MediaPackageAPI.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net5.0" />
@@ -78,7 +85,7 @@
       <option name="presentableId" value="Default" />
       <updated>1623936583650</updated>
       <workItem from="1623936588096" duration="146000" />
-      <workItem from="1623936743101" duration="2447000" />
+      <workItem from="1623936743101" duration="7606000" />
     </task>
     <servers />
   </component>
