@@ -123,6 +123,7 @@ namespace VODStreaming.Services
         {
             manifest = AddTokenToKeyDelivery(manifest, token);
             manifest = ConvertRelativeUrlsToAbsolute(manifest, manifestUrl);
+            manifest = FixSpacesInUrls(manifest);
             return manifest;
         }
 
@@ -172,6 +173,12 @@ namespace VODStreaming.Services
             manifest = Regex.Replace(manifest, "(#EXT-X-MEDIA:TYPE=AUDIO(?=.*?LANGUAGE=\"nor\").*?)(AUTOSELECT=..S?)", (Match m) => $"{m.Groups[1].Value}AUTOSELECT=YES");
             manifest = Regex.Replace(manifest, "(#EXT-X-MEDIA:TYPE=AUDIO(?=.*?LANGUAGE=\"no-x-tolk\").*?)(AUTOSELECT=..S?)", (Match m) => $"{m.Groups[1].Value}AUTOSELECT=NO");
 
+            return manifest;
+        }
+
+        private static string FixSpacesInUrls(string manifest)
+        {
+            manifest = Regex.Replace(manifest, @"^https:\/\/.+$|URI="".+?""", m => m.Value.Replace(" ", "%20"), RegexOptions.Multiline);
             return manifest;
         }
 
