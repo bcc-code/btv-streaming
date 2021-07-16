@@ -39,11 +39,29 @@ namespace LivestreamFunctions.Services
                 return $"{proxySecondLevelBaseUrl}?url={urlEncodedTopLevelManifestBaseUrl}{HttpUtility.UrlEncode("/" + path)}&token={urlEncodedToken}";
             }
 
-            string newContent = Regex.Replace(topLevelManifestContent, @"(index_\d+\.m3u8)", (Match m) => generateSecondLevelProxyUrl(m.Value));
+            var newContent = Regex.Replace(topLevelManifestContent, @"(index_\d+\.m3u8)", (Match m) => generateSecondLevelProxyUrl(m.Value));
             newContent = Regex.Replace(newContent, @"#EXT-X-MEDIA:TYPE=SUBTITLES.+(?=index_.+\.m3u8)", (Match m) => $"{m.Value}{topLevelManifestBaseUrl}/{m.Groups[1].Value}");
             newContent = Regex.Replace(newContent, @"(#EXT-X-MEDIA:TYPE=AUDIO.+)(index_.+\.m3u8)", (Match m) => $"{m.Groups[1].Value}{generateSecondLevelProxyUrl(m.Groups[2].Value)}");
+            newContent = SortAudioTracks(newContent);
 
             return newContent;
+        }
+
+        public string SortAudioTracks(string manifest)
+        {
+            var lines = manifest.Split('\n').ToList();
+
+            var tolkLine = lines.FirstOrDefault(line => line.Contains("LANGUAGE=\"no-x-tolk\"", StringComparison.InvariantCultureIgnoreCase));
+            if (string.IsNullOrEmpty(tolkLine)) return manifest;
+
+            lines.Remove(tolkLine);
+
+            var norwegianLineIndex = lines.FindIndex(l => l.Contains("LANGUAGE=\"nor\"", StringComparison.InvariantCultureIgnoreCase));
+            if (norwegianLineIndex == -1) return manifest;
+
+            lines.Insert(norwegianLineIndex+1, tolkLine);
+
+            return string.Join('\n', lines);
         }
 
         public string ModifyManifestToBeAudioOnly(string topLevelManifest, string language)
