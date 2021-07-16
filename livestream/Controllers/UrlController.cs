@@ -52,7 +52,7 @@ namespace LivestreamFunctions
 
             if (!string.IsNullOrWhiteSpace(language))
             {
-                language = new string(language.Where(char.IsLetterOrDigit).ToArray());
+                language = new string(language.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
                 url += $"&language={language}";
             }
 

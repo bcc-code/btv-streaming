@@ -63,7 +63,7 @@ namespace LivestreamFunctions.Services
             Regex regex = new Regex("#EXT-X-MEDIA:TYPE=AUDIO.+URI=\"(?<uri>.+)\"");
             if (!string.IsNullOrWhiteSpace(language))
             {
-                language = new string(language.Where(char.IsLetterOrDigit).ToArray());
+                language = new string(language.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
                 regex = new Regex($"#EXT-X-MEDIA:TYPE=AUDIO.+LANGUAGE=\"{language.ToLower()}\".+URI=\"(?<uri>.+)\"");
             }
 
