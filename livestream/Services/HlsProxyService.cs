@@ -98,7 +98,7 @@ namespace LivestreamFunctions.Services
 
         public async Task<string> RetrieveAndModifySecondLevelManifestAsync(string url, Func<string, string, string> generateKeyDeliveryUrl)
         {
-            const string playlistRegex = @"(index_.+_\d+\.(ts|aac))";
+            const string playlistRegex = @"index_[^\s]+?(?:ts|aac|mp4)";
             const string urlRegex = @"(?:URI=).https?:\/\/[\da-z\.]+\.[a-z\.]{2,6}[\/\w \.-](.+)\/(.+).";
             // The regex captures URI="https://blab123labla.anything.anything.anything/{1}/{2}"
 
