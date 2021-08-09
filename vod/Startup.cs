@@ -110,6 +110,7 @@ namespace VODStreaming
                 options.EnableAdaptiveSampling = false;
             });
             services.AddSingleton<ITelemetryInitializer, RemoveTokensTelemetryInitializer>();
+            services.AddSingleton<ITelemetryInitializer, UserAgentTelemetryInitializer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
