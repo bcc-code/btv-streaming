@@ -95,7 +95,7 @@ namespace LivestreamFunctions
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TelemetryConfiguration telemetryConfiguration)
         {
             telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder
-                .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 0.1)
+                .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 0.5)
                 .Build();
 
             app.UseForwardedHeaders();
