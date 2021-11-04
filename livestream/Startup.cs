@@ -10,10 +10,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -89,6 +92,15 @@ namespace LivestreamFunctions
             });
             services.AddSingleton<ITelemetryInitializer, RemoveTokensTelemetryInitializer>();
             services.AddSingleton<ITelemetryInitializer, UserAgentTelemetryInitializer>();
+            services.AddResponseCompression(options => {
+                options.Providers.Add<GzipCompressionProvider>();
+                options.EnableForHttps = true;
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/vnd.apple.mpegurl" });
+            });
+            services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,6 +110,7 @@ namespace LivestreamFunctions
                 .UseAdaptiveSampling(maxTelemetryItemsPerSecond: 5)
                 .Build();
 
+            app.UseResponseCompression();
             app.UseForwardedHeaders();
             app.UseRouting();
             app.UseAuthentication();
