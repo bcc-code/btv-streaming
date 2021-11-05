@@ -43,6 +43,9 @@ namespace LivestreamFunctions.Services
             newContent = Regex.Replace(newContent, @"#EXT-X-MEDIA:TYPE=SUBTITLES.+(?=index_.+\.m3u8)", (Match m) => $"{m.Value}{topLevelManifestBaseUrl}/{m.Groups[1].Value}");
             newContent = Regex.Replace(newContent, @"(#EXT-X-MEDIA:TYPE=AUDIO.+)(index_.+\.m3u8)", (Match m) => $"{m.Groups[1].Value}{generateSecondLevelProxyUrl(m.Groups[2].Value)}");
             newContent = SortAudioTracks(newContent);
+            newContent = newContent.Replace("#EXT-X-VERSION:3", "#EXT-X-VERSION:4");
+            newContent = newContent.Replace("#EXT-X-TARGETDURATION:12", "#EXT-X-TARGETDURATION:6");
+
 
             return newContent;
         }
@@ -107,6 +110,8 @@ namespace LivestreamFunctions.Services
 
             var newContent = Regex.Replace(content, urlRegex, m => $"URI=\"{generateKeyDeliveryUrl(m.Groups[1].Value, m.Groups[2].Value)}\"");
             newContent = Regex.Replace(newContent, playlistRegex, m => string.Format(CultureInfo.InvariantCulture, baseUrl + "/" + m.Value));
+            newContent = newContent.Replace("#EXT-X-VERSION:3", "#EXT-X-VERSION:4");
+            newContent = newContent.Replace("#EXT-X-TARGETDURATION:12", "#EXT-X-TARGETDURATION:6");
             return newContent;
         }
 
