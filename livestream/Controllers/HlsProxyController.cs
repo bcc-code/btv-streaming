@@ -57,12 +57,12 @@ namespace LivestreamFunctions
         [EnableCors("All")]
         public async Task<IActionResult> GetSecondLevelManifest(string token, string url)
         {
-            var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
+            /*var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
             var host = new Uri(url).Host.ToLower();
             if (host != allowedHost)
             {
                 return new BadRequestObjectResult("Invalid url, only URLS with '" + allowedHost + "' as host are allowed.");
-            }
+            }*/
             if (string.IsNullOrEmpty(token))
             {
                 return new BadRequestObjectResult("Missing parameters");

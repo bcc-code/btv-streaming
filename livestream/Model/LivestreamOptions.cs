@@ -9,5 +9,7 @@ namespace LivestreamFunctions.Model
     {
         public const string ConfigurationSection = "Live";
         public string HlsUrl { get; set; }
+        public string HlsUrl2 { get; set; }
+        public List<string> AllowedDomains { get; set; }
     }
 }
