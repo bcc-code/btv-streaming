@@ -40,7 +40,7 @@ namespace LivestreamFunctions
             }
 
             return new UrlDto {
-                Url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + token,
+                Url = _liveOptions.Value.HlsUrl2,
                 ExpiryTime = expiryTime
             };
         }
