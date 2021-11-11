@@ -16,12 +16,10 @@ namespace LivestreamFunctions
     public class UrlController : ControllerBase
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
-        private readonly IOptions<LivestreamOptions> _liveOptions;
 
         public UrlController(StreamingTokenHelper streamingTokenHelper, IOptions<LivestreamOptions> liveOptions)
         {
             _streamingTokenHelper = streamingTokenHelper;
-            _liveOptions = liveOptions;
         }
 
         [HttpGet("live")]
@@ -40,7 +38,7 @@ namespace LivestreamFunctions
             }
 
             return new UrlDto {
-                Url = _liveOptions.Value.HlsUrl2,
+                Url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + token,
                 ExpiryTime = expiryTime
             };
         }
@@ -57,13 +55,13 @@ namespace LivestreamFunctions
                 language = new string(language.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
                 url += $"&language={language}";
             }
-            
+
             var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
             var streamingToken = _streamingTokenHelper.Generate(expiryTime);
             url += $"&token={streamingToken}";
 
             return new UrlDto {
-                Url = _liveOptions.Value.HlsUrl2,
+                Url = url,
                 ExpiryTime = expiryTime
             };
         }
