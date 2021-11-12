@@ -29,7 +29,7 @@ namespace LivestreamFunctions
 
         [HttpGet("top-level")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetTopLevelManifest(string token, bool audio_only = false, string language = null)
+        public async Task<IActionResult> GetTopLevelManifest(string token, string playback_url = null, bool audio_only = false, string language = null)
         {
             if (string.IsNullOrEmpty(token))
             {
@@ -38,7 +38,7 @@ namespace LivestreamFunctions
 
             var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme); ;
 
-            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(_liveOptions.HlsUrl, token, secondLevelProxyUrl);
+            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(playback_url ?? _liveOptions.HlsUrl, token, secondLevelProxyUrl);
             if (audio_only)
             {
                 manifest = _proxyService.ModifyManifestToBeAudioOnly(manifest, language);
@@ -57,12 +57,12 @@ namespace LivestreamFunctions
         [EnableCors("All")]
         public async Task<IActionResult> GetSecondLevelManifest(string token, string url)
         {
-            /*var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
+            var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
             var host = new Uri(url).Host.ToLower();
             if (host != allowedHost)
             {
                 return new BadRequestObjectResult("Invalid url, only URLS with '" + allowedHost + "' as host are allowed.");
-            }*/
+            }
             if (string.IsNullOrEmpty(token))
             {
                 return new BadRequestObjectResult("Missing parameters");

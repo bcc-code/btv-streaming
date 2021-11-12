@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace LivestreamFunctions
 {
@@ -40,7 +41,7 @@ namespace LivestreamFunctions
             }
 
             return new UrlDto {
-                Url = _liveOptions.Value.HlsUrl2 + "#token=" + token,
+                Url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme) + "?url=" + HttpUtility.UrlEncode(_liveOptions.Value.HlsUrl2) + "&token=" + token,
                 ExpiryTime = expiryTime
             };
         }

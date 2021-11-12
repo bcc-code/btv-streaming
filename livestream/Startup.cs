@@ -52,6 +52,7 @@ namespace LivestreamFunctions
             services.AddSingleton(_ => new StreamingTokenHelper(jwtVerificationKey));
             services.AddSingleton(s => new KeyRepository(s.GetRequiredService<IAppCache>(), s.GetRequiredService<IAmazonS3>(), s3KeyBucketName, dashKeyGroup));
             services.AddSingleton<HlsProxyService>();
+            services.AddSingleton<CmafProxyService>();
             services.AddLogging();
 
             var awsCredentials = new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);
