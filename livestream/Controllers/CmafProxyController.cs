@@ -17,10 +17,10 @@ namespace LivestreamFunctions
     public class CmafProxyController : ControllerBase
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
-        private readonly HlsProxyService _proxyService;
+        private readonly CmafProxyService _proxyService;
         private readonly LivestreamOptions _liveOptions;
 
-        public CmafProxyController(StreamingTokenHelper streamingTokenHelper, HlsProxyService proxyService, IOptions<LivestreamOptions> options)
+        public CmafProxyController(StreamingTokenHelper streamingTokenHelper, CmafProxyService proxyService, IOptions<LivestreamOptions> options)
         {
             _streamingTokenHelper = streamingTokenHelper;
             _proxyService = proxyService;
