@@ -26,19 +26,18 @@ namespace LivestreamFunctions
         [EnableCors("All")]
         public ActionResult<UrlDto> GetHls(string token = null)
         {
-            DateTimeOffset? expiryTime = null;
-            if (!string.IsNullOrEmpty(token))
-            {
-                token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_').ToArray());
-            }
-            else
-            {
-                expiryTime = DateTimeOffset.UtcNow.AddHours(6);
-                token = _streamingTokenHelper.Generate(expiryTime.Value);
-            }
+            var url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme);
+            url += "?audio_only=true&someParam=.m3u8";
 
-            return new UrlDto {
-                Url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme) + "?token=" + token,
+            url += $"&language=no";
+
+            var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
+            var streamingToken = _streamingTokenHelper.Generate(expiryTime);
+            url += $"&token={streamingToken}";
+
+            return new UrlDto
+            {
+                Url = url,
                 ExpiryTime = expiryTime
             };
         }
