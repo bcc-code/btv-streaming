@@ -40,7 +40,7 @@ namespace LivestreamFunctions
             }
 
             return new UrlDto {
-                Url = _liveOptions.Value.HlsUrl2,
+                Url = _liveOptions.Value.HlsUrl2 + "?token=" + token,
                 ExpiryTime = expiryTime
             };
         }
