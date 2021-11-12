@@ -29,7 +29,7 @@ namespace LivestreamFunctions
             var url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme);
             url += "?audio_only=true&someParam=.m3u8";
 
-            url += $"&language=no";
+            url += $"&language=nor";
 
             var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
             var streamingToken = _streamingTokenHelper.Generate(expiryTime);
