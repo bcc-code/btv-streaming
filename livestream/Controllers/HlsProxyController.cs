@@ -29,8 +29,19 @@ namespace LivestreamFunctions
 
         [HttpGet("top-level")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetTopLevelManifest(string token, bool audio_only = false, string language = null)
+        public async Task<IActionResult> GetTopLevelManifest(string token, bool audio_only = false, bool special_mode = false, string language = null)
         {
+            if (special_mode)
+            {
+                Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+                {
+                    NoStore = true,
+                    MaxAge = TimeSpan.FromSeconds(0)
+                };
+                return Content("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-INDEPENDENT-SEGMENTS\n#EXT-X-STREAM-INF:BANDWIDTH=128000,AUDIO=\"audio_0\",CODECS=\"avc1.42C00C,mp4a.40.2\"\nhttps://live.stream.brunstad.tv/out/v1/37f897a9330c454ebc1b6a983495e3a8/index_1.m3u8\n#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio_0\",CHANNELS=\"2\",NAME=\"Norsk\",LANGUAGE=\"nor\",DEFAULT=YES,AUTOSELECT=YES,URI=\"https://live.stream.brunstad.tv/out/v1/37f897a9330c454ebc1b6a983495e3a8/index_7_0.m3u8\"\n", "application/vnd.apple.mpegurl", Encoding.UTF8);
+            }
+
             if (string.IsNullOrEmpty(token))
             {
                 return new BadRequestObjectResult("Missing parameters");

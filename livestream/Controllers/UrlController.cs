@@ -27,7 +27,7 @@ namespace LivestreamFunctions
         public ActionResult<UrlDto> GetHls(string token = null)
         {
             var url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme);
-            url += "?audio_only=true&someParam=.m3u8";
+            url += "?special_mode=true&someParam=.m3u8";
 
             url += $"&language=nor";
 
