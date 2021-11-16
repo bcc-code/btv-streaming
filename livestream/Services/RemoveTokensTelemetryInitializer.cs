@@ -17,7 +17,7 @@ namespace LivestreamFunctions.Services
         {
             if (telemetry is not RequestTelemetry requestTelemetry) return;
 
-            if (requestTelemetry.Url?.Query?.Contains("token") == true)
+            if (requestTelemetry.Url?.Query?.Contains("token") == true && requestTelemetry.Success == true)
             {
                 var query = HttpUtility.ParseQueryString(requestTelemetry.Url.Query);
                 query.Set("token", "removed-from-logs");
