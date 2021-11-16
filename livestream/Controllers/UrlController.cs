@@ -27,18 +27,10 @@ namespace LivestreamFunctions
 
         [HttpGet("live")]
         [EnableCors("All")]
-        public ActionResult<UrlDto> GetHls(string token = null)
+        public ActionResult<UrlDto> GetHls()
         {
-            DateTimeOffset? expiryTime = null;
-            if (!string.IsNullOrEmpty(token))
-            {
-                token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_').ToArray());
-            }
-            else
-            {
-                expiryTime = DateTimeOffset.UtcNow.AddHours(6);
-                token = _streamingTokenHelper.Generate(expiryTime.Value);
-            }
+            var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
+            var token = _streamingTokenHelper.Generate(expiryTime);
 
             return new UrlDto {
                 Url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme) + "?url=" + HttpUtility.UrlEncode(_liveOptions.Value.HlsUrl2) + "&token=" + token,
