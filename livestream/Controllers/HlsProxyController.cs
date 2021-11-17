@@ -28,8 +28,8 @@ namespace LivestreamFunctions
         }
 
         [HttpHead("subtitles")]
-        [HttpHead("toplevelmanifest")]
-        [HttpHead("secondlevelmanifest")]
+        [HttpHead("top-level")]
+        [HttpHead("second-level")]
         public ActionResult GetHeadersForHeadRequests()
         {
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
@@ -41,7 +41,9 @@ namespace LivestreamFunctions
             return Content("", "application/vnd.apple.mpegurl", Encoding.UTF8);
         }
 
-        [HttpGet("top-level")]
+        [HttpHead("subtitles")]
+        [HttpHead("top-level")]
+        [HttpHead("second-level")]
         [EnableCors("All")]
         public async Task<IActionResult> GetTopLevelManifest(string token, string playback_url = null, bool audio_only = false, string language = null)
         {

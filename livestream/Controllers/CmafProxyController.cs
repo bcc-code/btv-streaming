@@ -28,8 +28,8 @@ namespace LivestreamFunctions
         }
 
         [HttpHead("subtitles")]
-        [HttpHead("toplevelmanifest")]
-        [HttpHead("secondlevelmanifest")]
+        [HttpHead("top-level")]
+        [HttpHead("second-level")]
         public ActionResult GetHeadersForHeadRequests()
         {
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
