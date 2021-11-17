@@ -27,6 +27,20 @@ namespace LivestreamFunctions
             _liveOptions = options.Value;
         }
 
+        [HttpHead("subtitles")]
+        [HttpHead("toplevelmanifest")]
+        [HttpHead("secondlevelmanifest")]
+        public ActionResult GetHeadersForHeadRequests()
+        {
+            Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+            {
+                NoStore = true,
+                MaxAge = TimeSpan.FromSeconds(0)
+            };
+            return Content("", "application/vnd.apple.mpegurl", Encoding.UTF8);
+        }
+
         [HttpGet("top-level")]
         [EnableCors("All")]
         public async Task<IActionResult> GetTopLevelManifest(string token, string url, bool audio_only = false, string language = null)
