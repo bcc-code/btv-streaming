@@ -36,7 +36,7 @@ namespace LivestreamFunctions
                 return new BadRequestObjectResult("Missing parameters");
             }
 
-            var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme); ;
+            var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);
 
             var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(url, token, secondLevelProxyUrl);
             if (audio_only)
@@ -48,6 +48,40 @@ namespace LivestreamFunctions
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
             {
                 NoStore = true,
+                MaxAge = TimeSpan.FromSeconds(0)
+            };
+            return Content(manifest, "application/vnd.apple.mpegurl", Encoding.UTF8);
+        }
+
+
+        [HttpGet("second-level")]
+        [EnableCors("All")]
+        public async Task<IActionResult> GetSecondLevelManifest(string token, string url)
+        {
+            var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
+            var host = new Uri(url).Host.ToLower();
+            if (host != allowedHost)
+            {
+                return new BadRequestObjectResult("Invalid url, only URLS with '" + allowedHost + "' as host are allowed.");
+            }
+            if (string.IsNullOrEmpty(token))
+            {
+                return new BadRequestObjectResult("Missing parameters");
+            }
+
+            var keyDeliveryBaseUrl = $"{Request.Scheme}://{Request.Host}/api/keydelivery";
+            var urlEncodedToken = HttpUtility.UrlEncode(token);
+            string generateKeyDeliveryUrl(string group, string keyId)
+            {
+                return keyDeliveryBaseUrl + $"/{group}/{keyId}?token={urlEncodedToken}";
+            }
+
+            var manifest = await _proxyService.RetrieveAndModifySecondLevelManifestAsync(url, generateKeyDeliveryUrl);
+
+            Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+            {
+                Public = true,
                 MaxAge = TimeSpan.FromSeconds(0)
             };
             return Content(manifest, "application/vnd.apple.mpegurl", Encoding.UTF8);

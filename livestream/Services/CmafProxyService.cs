@@ -31,10 +31,12 @@ namespace LivestreamFunctions.Services
             var topLevelManifestBaseUrl = topLevelManifestUrl.Substring(0, topLevelManifestUrl.IndexOf("/index", System.StringComparison.OrdinalIgnoreCase));
 
             var urlEncodedTopLevelManifestBaseUrl = HttpUtility.UrlEncode(topLevelManifestBaseUrl);
+            token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == '-').ToArray());
+            var urlEncodedToken = HttpUtility.UrlEncode(token);
 
             string generateSecondLevelProxyUrl(string path)
             {
-                return $"{topLevelManifestBaseUrl}/{path}";
+                return $"{proxySecondLevelBaseUrl}?url={urlEncodedTopLevelManifestBaseUrl}{HttpUtility.UrlEncode("/" + path)}&token={urlEncodedToken}";
             }
 
             var newContent = Regex.Replace(topLevelManifestContent, @"(index_\d+\.m3u8)", (Match m) => generateSecondLevelProxyUrl(m.Value));
@@ -97,18 +99,33 @@ namespace LivestreamFunctions.Services
 
         public async Task<string> RetrieveAndModifySecondLevelManifestAsync(string url, Func<string, string, string> generateKeyDeliveryUrl)
         {
-            const string playlistRegex = @"index_[^\s]+?(?:ts|aac|mp4)";
-            const string urlRegex = @"(?:URI=).https?:\/\/[\da-z\.]+\.[a-z\.]{2,6}[\/\w \.-](.+)\/(.+).";
+            const string playlistRegex = @"\.\.\/[^\s]+?(?:ts|aac|mp4|vtt)(.+)?";
+            const string urlRegex = @"(?:URI=).https?:\/\/[\da-z\.]+\.[a-z\.]{2,6}[\/\w \.-](.+?)\/(.+?)""";
             // The regex captures URI="https://blab123labla.anything.anything.anything/{1}/{2}"
 
             var baseUrl = url.Substring(0, url.IndexOf("/index", StringComparison.OrdinalIgnoreCase));
             var content = await GetRawContentAsync(url);
 
             var newContent = Regex.Replace(content, urlRegex, m => $"URI=\"{generateKeyDeliveryUrl(m.Groups[1].Value, m.Groups[2].Value)}\"");
-            newContent = Regex.Replace(newContent, playlistRegex, m => string.Format(CultureInfo.InvariantCulture, baseUrl + "/" + m.Value));
-            newContent = newContent.Replace("#EXT-X-VERSION:3", "#EXT-X-VERSION:7");
-            newContent = newContent.Replace("#EXT-X-TARGETDURATION:12", "#EXT-X-TARGETDURATION:6");
+            newContent = ConvertRelativeUrlsToAbsolute(newContent, url);
             return newContent;
+        }
+
+
+        private static string GetAbsoluteBaseUrl(string url)
+        {
+            return url.Substring(0, url.LastIndexOf("/"));
+        }
+
+        private static string ConvertRelativeUrlsToAbsolute(string manifest, string manifestUrl)
+        {
+            var baseUrl = GetAbsoluteBaseUrl(manifestUrl);
+            // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.1
+            // Lines not starting with # is a file/playlist url.
+            // If relative, make it absolute.
+            manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", baseUrl + "/$&", RegexOptions.Multiline);
+            manifest = Regex.Replace(manifest, @"URI=""(?!https?:\/\/)(.+?)""", $"URI=\"{baseUrl}/$1\"");
+            return manifest;
         }
 
 
