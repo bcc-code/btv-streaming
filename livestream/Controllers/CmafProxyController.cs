@@ -29,7 +29,7 @@ namespace LivestreamFunctions
 
         [HttpGet("top-level")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetTopLevelManifest(string token, string url = null, bool audio_only = false, string language = null)
+        public async Task<IActionResult> GetTopLevelManifest(string token, string url, bool audio_only = false, string language = null)
         {
             if (string.IsNullOrEmpty(token))
             {
