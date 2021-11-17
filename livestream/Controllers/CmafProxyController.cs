@@ -32,6 +32,9 @@ namespace LivestreamFunctions
         [HttpHead("second-level")]
         public ActionResult GetHeadersForHeadRequests()
         {
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            Response.Headers.Add("Access-Control-Allow-Methods", "GET");
+            Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
             {

@@ -41,9 +41,7 @@ namespace LivestreamFunctions
             return Content("", "application/vnd.apple.mpegurl", Encoding.UTF8);
         }
 
-        [HttpHead("subtitles")]
-        [HttpHead("top-level")]
-        [HttpHead("second-level")]
+        [HttpGet("top-level")]
         [EnableCors("All")]
         public async Task<IActionResult> GetTopLevelManifest(string token, string playback_url = null, bool audio_only = false, string language = null)
         {
