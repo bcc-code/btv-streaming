@@ -40,7 +40,7 @@ using System.Globalization;
             }
 
             var newContent = Regex.Replace(topLevelManifestContent, @"(index_\d+\.m3u8)", (Match m) => generateSecondLevelProxyUrl(m.Value));
-            newContent = Regex.Replace(newContent, @"#EXT-X-MEDIA:TYPE=SUBTITLES.+(?=index_.+\.m3u8)", (Match m) => $"{m.Value}{topLevelManifestBaseUrl}/{m.Groups[1].Value}");
+            newContent = Regex.Replace(newContent, @"(#EXT-X-MEDIA:TYPE=SUBTITLES.+)(index_.+\.m3u8)", (Match m) => $"{m.Groups[1].Value}{generateSecondLevelProxyUrl(m.Groups[2].Value)}");
             newContent = Regex.Replace(newContent, @"(#EXT-X-MEDIA:TYPE=AUDIO.+)(index_.+\.m3u8)", (Match m) => $"{m.Groups[1].Value}{generateSecondLevelProxyUrl(m.Groups[2].Value)}");
             newContent = SortAudioTracks(newContent);
 
