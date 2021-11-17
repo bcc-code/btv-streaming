@@ -1,4 +1,5 @@
 using Amazon;
+using Amazon.CloudFront;
 using Amazon.Runtime;
 using Amazon.S3;
 using LazyCache;
@@ -18,6 +19,7 @@ using System;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace LivestreamFunctions
@@ -56,7 +58,12 @@ namespace LivestreamFunctions
             services.AddLogging();
 
             var awsCredentials = new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);
+            var privateKeyBase64 = Configuration["CFPrivateKey"];
+            var privateKey = Encoding.UTF8.GetString(Convert.FromBase64String(privateKeyBase64));
+            var keyPairId = Configuration["CFKeyPairId"];
             services.AddSingleton<IAmazonS3>((s) => new AmazonS3Client(awsCredentials, RegionEndpoint.EUNorth1));
+            services.AddSingleton<IAmazonCloudFront>((s) => new AmazonCloudFrontClient(awsCredentials, RegionEndpoint.EUNorth1));
+            services.AddSingleton<UrlSigner>((s) => new UrlSigner(s.GetRequiredService<IAppCache>(), s.GetRequiredService<IAmazonCloudFront>(), privateKey, keyPairId));
             services.AddCors(options => {
                 options.AddPolicy("All", builder => {
                     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();

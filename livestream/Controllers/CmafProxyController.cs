@@ -55,7 +55,7 @@ namespace LivestreamFunctions
 
             var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);
 
-            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(url, token, secondLevelProxyUrl);
+            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(url, secondLevelProxyUrl);
             if (audio_only)
             {
                 manifest = _proxyService.ModifyManifestToBeAudioOnly(manifest, language);
@@ -73,27 +73,11 @@ namespace LivestreamFunctions
 
         [HttpGet("second-level")]
         [EnableCors("All")]
-        public async Task<IActionResult> GetSecondLevelManifest(string token, string url)
+        public async Task<IActionResult> GetSecondLevelManifest(string url)
         {
-            var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();
-            var host = new Uri(url).Host.ToLower();
-            if (host != allowedHost)
-            {
-                return new BadRequestObjectResult("Invalid url, only URLS with '" + allowedHost + "' as host are allowed.");
-            }
-            if (string.IsNullOrEmpty(token))
-            {
-                return new BadRequestObjectResult("Missing parameters");
-            }
-
             var keyDeliveryBaseUrl = $"{Request.Scheme}://{Request.Host}/api/keydelivery";
-            var urlEncodedToken = HttpUtility.UrlEncode(token);
-            string generateKeyDeliveryUrl(string group, string keyId)
-            {
-                return keyDeliveryBaseUrl + $"/{group}/{keyId}?token={urlEncodedToken}";
-            }
 
-            var manifest = await _proxyService.RetrieveAndModifySecondLevelManifestAsync(url, generateKeyDeliveryUrl);
+            var manifest = await _proxyService.RetrieveAndModifySecondLevelManifestAsync(url);
 
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
             Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue

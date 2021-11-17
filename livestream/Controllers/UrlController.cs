@@ -18,11 +18,13 @@ namespace LivestreamFunctions
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
         private readonly IOptions<LivestreamOptions> _liveOptions;
+        private readonly UrlSigner _urlSigner;
 
-        public UrlController(StreamingTokenHelper streamingTokenHelper, IOptions<LivestreamOptions> liveOptions)
+        public UrlController(StreamingTokenHelper streamingTokenHelper, IOptions<LivestreamOptions> liveOptions, UrlSigner urlSigner)
         {
             _streamingTokenHelper = streamingTokenHelper;
             _liveOptions = liveOptions;
+            _urlSigner = urlSigner;
         }
 
         [HttpGet("live")]
@@ -32,8 +34,10 @@ namespace LivestreamFunctions
             var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
             var token = _streamingTokenHelper.Generate(expiryTime);
 
+            var url = _urlSigner.GetUrl(_liveOptions.Value.HlsUrl2);
+
             return new UrlDto {
-                Url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme) + "?url=" + HttpUtility.UrlEncode(_liveOptions.Value.HlsUrl2) + "&token=" + token,
+                Url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme) + "?url=" + HttpUtility.UrlEncode(url) + "&token=" + token,
                 ExpiryTime = expiryTime
             };
         }

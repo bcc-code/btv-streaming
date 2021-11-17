@@ -12,7 +12,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 
-namespace LivestreamFunctions.Services
+    namespace LivestreamFunctions.Services
 {
     public class CmafProxyService
     {
@@ -25,18 +25,18 @@ namespace LivestreamFunctions.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<string> RetrieveAndModifyTopLevelManifestForToken(string topLevelManifestUrl, string token, string proxySecondLevelBaseUrl)
+        public async Task<string> RetrieveAndModifyTopLevelManifestForToken(string topLevelManifestUrl, string proxySecondLevelBaseUrl)
         {
             var topLevelManifestContent = await GetRawContentAsync(topLevelManifestUrl);
             var topLevelManifestBaseUrl = topLevelManifestUrl.Substring(0, topLevelManifestUrl.IndexOf("/index", System.StringComparison.OrdinalIgnoreCase));
+            var queryParams = topLevelManifestUrl[topLevelManifestUrl.IndexOf("?")..];
+
 
             var urlEncodedTopLevelManifestBaseUrl = HttpUtility.UrlEncode(topLevelManifestBaseUrl);
-            token = new string(token.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == '-').ToArray());
-            var urlEncodedToken = HttpUtility.UrlEncode(token);
 
             string generateSecondLevelProxyUrl(string path)
             {
-                return $"{proxySecondLevelBaseUrl}?url={urlEncodedTopLevelManifestBaseUrl}{HttpUtility.UrlEncode("/" + path)}&token={urlEncodedToken}";
+                return $"{proxySecondLevelBaseUrl}?url={urlEncodedTopLevelManifestBaseUrl}{HttpUtility.UrlEncode("/" + path)}{HttpUtility.UrlEncode(queryParams)}";
             }
 
             var newContent = Regex.Replace(topLevelManifestContent, @"(index_\d+\.m3u8)", (Match m) => generateSecondLevelProxyUrl(m.Value));
@@ -97,18 +97,16 @@ namespace LivestreamFunctions.Services
             return newManifest;
         }
 
-        public async Task<string> RetrieveAndModifySecondLevelManifestAsync(string url, Func<string, string, string> generateKeyDeliveryUrl)
+        public async Task<string> RetrieveAndModifySecondLevelManifestAsync(string url)
         {
             const string playlistRegex = @"\.\.\/[^\s]+?(?:ts|aac|mp4|vtt)(.+)?";
             const string urlRegex = @"(?:URI=).https?:\/\/[\da-z\.]+\.[a-z\.]{2,6}[\/\w \.-](.+?)\/(.+?)""";
             // The regex captures URI="https://blab123labla.anything.anything.anything/{1}/{2}"
 
-            var baseUrl = url.Substring(0, url.IndexOf("/index", StringComparison.OrdinalIgnoreCase));
             var content = await GetRawContentAsync(url);
 
-            var newContent = Regex.Replace(content, urlRegex, m => $"URI=\"{generateKeyDeliveryUrl(m.Groups[1].Value, m.Groups[2].Value)}\"");
-            newContent = ConvertRelativeUrlsToAbsolute(newContent, url);
-            return newContent;
+            content = ConvertRelativeUrlsToAbsolute(content, url);
+            return content;
         }
 
 
@@ -119,12 +117,13 @@ namespace LivestreamFunctions.Services
 
         private static string ConvertRelativeUrlsToAbsolute(string manifest, string manifestUrl)
         {
+            var queryParams = manifestUrl[manifestUrl.IndexOf("?")..];
             var baseUrl = GetAbsoluteBaseUrl(manifestUrl);
             // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.1
             // Lines not starting with # is a file/playlist url.
             // If relative, make it absolute.
-            manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", baseUrl + "/$&", RegexOptions.Multiline);
-            manifest = Regex.Replace(manifest, @"URI=""(?!https?:\/\/)(.+?)""", $"URI=\"{baseUrl}/$1\"");
+            manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", baseUrl + "/$&" + queryParams, RegexOptions.Multiline);
+            manifest = Regex.Replace(manifest, @"URI=""(?!https?:\/\/)(.+?)""", $"URI=\"{baseUrl}/$1{queryParams}\"");
             return manifest;
         }
 
