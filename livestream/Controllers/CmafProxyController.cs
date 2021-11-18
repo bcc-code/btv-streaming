@@ -9,6 +9,7 @@ using Microsoft.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LivestreamFunctions
 {
@@ -18,12 +19,17 @@ namespace LivestreamFunctions
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
         private readonly CmafProxyService _proxyService;
+        private readonly UrlSigner _urlSigner;
         private readonly LivestreamOptions _liveOptions;
 
-        public CmafProxyController(StreamingTokenHelper streamingTokenHelper, CmafProxyService proxyService, IOptions<LivestreamOptions> options)
+        public CmafProxyController(StreamingTokenHelper streamingTokenHelper,
+            CmafProxyService proxyService,
+            IOptions<LivestreamOptions> options,
+            UrlSigner urlSigner)
         {
             _streamingTokenHelper = streamingTokenHelper;
             _proxyService = proxyService;
+            _urlSigner = urlSigner;
             _liveOptions = options.Value;
         }
 
@@ -50,7 +56,18 @@ namespace LivestreamFunctions
         {
             if (string.IsNullOrEmpty(token))
             {
-                return new BadRequestObjectResult("Missing parameters");
+                return BadRequest("Missing parameters");
+            }
+
+            if (string.IsNullOrEmpty(url))
+            {
+                if (_streamingTokenHelper.ValidateToken(token))
+                {
+                    url = _urlSigner.GetUrl(_liveOptions.HlsUrl2);
+                } else
+                {
+                    return BadRequest("Missing parameters");
+                }
             }
 
             var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);
