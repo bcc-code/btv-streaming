@@ -54,13 +54,15 @@ namespace LivestreamFunctions
                 language = new string(language.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
                 url += $"&language={language}";
             }
-            
+
+            url += _urlSigner.GetUrl("&url="+HttpUtility.UrlEncode(_liveOptions.Value.HlsUrl2));
+
             var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
             var streamingToken = _streamingTokenHelper.Generate(expiryTime);
             url += $"&token={streamingToken}";
 
             return new UrlDto {
-                Url = _liveOptions.Value.HlsUrl2,
+                Url = url,
                 ExpiryTime = expiryTime
             };
         }
