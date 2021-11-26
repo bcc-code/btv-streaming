@@ -75,8 +75,14 @@ using System.Globalization;
                 break;
             }
 
+            var version = topLevelManifest[topLevelManifest.IndexOf("#EXT-X-VERSION:") + "#EXT-X-VERSION:".Length];
+            if (version == default || char.IsWhiteSpace(version))
+            {
+                version = '6';
+            }
+
             var newManifest = "#EXTM3U" + "\n";
-            newManifest += "#EXT-X-VERSION:7" + "\n";
+            newManifest += "#EXT-X-VERSION:" + version + "\n";
             newManifest += "#EXT-X-INDEPENDENT-SEGMENTS" + "\n";
 
             Regex regex = new Regex("#EXT-X-MEDIA:TYPE=AUDIO.+URI=\"(?<uri>.+)\"");
