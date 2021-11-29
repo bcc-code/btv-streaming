@@ -63,7 +63,7 @@ namespace LivestreamFunctions
             {
                 if (_streamingTokenHelper.ValidateToken(token))
                 {
-                    url = _urlSigner.GetUrl(_liveOptions.HlsUrl2);
+                    url = _urlSigner.Sign(_liveOptions.HlsUrl2);
                 } else
                 {
                     return BadRequest("Missing parameters");
