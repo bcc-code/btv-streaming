@@ -40,7 +40,7 @@ steps:
       - '--platform=managed'
       - '--to-latest'
       - '--quiet'
-    id: Deploy
+    id: ForceTrafficLatest
     entrypoint: gcloud
 images:
   - '$_IMAGE_NAME:$COMMIT_SHA'
