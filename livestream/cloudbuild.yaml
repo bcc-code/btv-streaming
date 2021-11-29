@@ -31,6 +31,17 @@ steps:
       - '--quiet'
     id: Deploy
     entrypoint: gcloud
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+    args:
+      - run
+      - services
+      - update-traffic
+      - $_SERVICE_NAME
+      - '--platform=managed'
+      - '--to-latest'
+      - '--quiet'
+    id: Deploy
+    entrypoint: gcloud
 images:
   - '$_IMAGE_NAME:$COMMIT_SHA'
   - '$_IMAGE_NAME:$BRANCH_NAME'
