@@ -46,7 +46,7 @@ namespace LivestreamFunctions
         [EnableCors("All")]
         public ActionResult<UrlDto> GetLiveAudioOnlyUrl(string language = null)
         {
-            var url = Url.Action("GetTopLevelManifest", "HlsProxy", null, Request.Scheme);
+            var url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme);
             url += "?audio_only=true&someParam=.m3u8";
 
             if (!string.IsNullOrWhiteSpace(language))
