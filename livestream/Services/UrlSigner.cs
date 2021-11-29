@@ -41,14 +41,14 @@ namespace LivestreamFunctions.Services
         public string Sign(string url)
         {
             using var privateKeyReader = new StringReader(_privateKey);
-            Uri host;
-            if (!Uri.TryCreate(url, UriKind.Absolute, out host))
+            Uri uri;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
             {
                 throw new ApplicationException("url is not valid: " + url);
             }
             var tempUrl = AmazonCloudFrontUrlSigner.GetCustomSignedURL(
                 AmazonCloudFrontUrlSigner.Protocol.https,
-                host.ToString().ToLower(),
+                uri.Host.ToLower(),
                 privateKeyReader,
                 "*",
                 _keyPairId,
