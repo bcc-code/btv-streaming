@@ -16,36 +16,47 @@ using System.Globalization;
 {
     public class CmafProxyService
     {
-        private readonly ILogger<HlsProxyService> _logger;
+        private readonly ILogger<CmafProxyService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public CmafProxyService(ILogger<HlsProxyService> logger, IHttpClientFactory httpClientFactory)
+        public CmafProxyService(ILogger<CmafProxyService> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<string> RetrieveAndModifyTopLevelManifestForToken(string topLevelManifestUrl, string proxySecondLevelBaseUrl)
+        public async Task<string> RetrieveAndModifyTopLevelManifest(string topLevelManifestUrl, string proxySecondLevelBaseUrl)
         {
-            var topLevelManifestContent = await GetRawContentAsync(topLevelManifestUrl);
-            var topLevelManifestBaseUrl = topLevelManifestUrl.Substring(0, topLevelManifestUrl.IndexOf("/index", System.StringComparison.OrdinalIgnoreCase));
-            var queryParams = topLevelManifestUrl[topLevelManifestUrl.IndexOf("?")..];
+            var manifest = await GetRawContentAsync(topLevelManifestUrl);
+            return CustomizeTopLevelManifest(manifest, topLevelManifestUrl, proxySecondLevelBaseUrl);
+        }
 
+        public string CustomizeTopLevelManifest(string manifest, string topLevelManifestUrl, string proxySecondLevelBaseUrl)
+        {
+            var urlBasePath = Regex.Match(topLevelManifestUrl, @"\/[^\/]+\.m3u8");
+            if (!urlBasePath.Success)
+            {
+                return "";
+            }
 
-            var urlEncodedTopLevelManifestBaseUrl = HttpUtility.UrlEncode(topLevelManifestBaseUrl);
+            var topLevelManifestBaseUrl = topLevelManifestUrl.Substring(0, urlBasePath.Index);
+            string queryParams = null;
+            if (topLevelManifestUrl.IndexOf("?") != -1)
+            {
+                queryParams = topLevelManifestUrl[(topLevelManifestUrl.IndexOf("?")+1)..];
+            }
 
             string generateSecondLevelProxyUrl(string path)
             {
-                return $"{proxySecondLevelBaseUrl}?url={urlEncodedTopLevelManifestBaseUrl}{HttpUtility.UrlEncode("/" + path)}{HttpUtility.UrlEncode(queryParams)}";
+                var combinedUrl = CombineUrl(topLevelManifestBaseUrl, "/" + path, queryParams);
+                return $"{proxySecondLevelBaseUrl}?url={HttpUtility.UrlEncode(combinedUrl)}";
             }
+            // TODO changes 29/11 took it too far here possibly
+            manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", (Match m) => generateSecondLevelProxyUrl(m.Value), RegexOptions.Multiline);
+            manifest = Regex.Replace(manifest, @"URI=""(?!https?:\/\/)(.+?)""", m => $"URI=\"{generateSecondLevelProxyUrl(m.Groups[1].Value)}\"");
+            manifest = SortAudioTracks(manifest);
 
-            var newContent = Regex.Replace(topLevelManifestContent, @"(index_\d+\.m3u8)", (Match m) => generateSecondLevelProxyUrl(m.Value));
-            newContent = Regex.Replace(newContent, @"(#EXT-X-MEDIA:TYPE=SUBTITLES.+)(index_.+\.m3u8)", (Match m) => $"{m.Groups[1].Value}{generateSecondLevelProxyUrl(m.Groups[2].Value)}");
-            newContent = Regex.Replace(newContent, @"(#EXT-X-MEDIA:TYPE=AUDIO.+)(index_.+\.m3u8)", (Match m) => $"{m.Groups[1].Value}{generateSecondLevelProxyUrl(m.Groups[2].Value)}");
-            newContent = SortAudioTracks(newContent);
-
-
-            return newContent;
+            return manifest;
         }
 
         public string SortAudioTracks(string manifest)
@@ -105,34 +116,65 @@ using System.Globalization;
 
         public async Task<string> RetrieveAndModifySecondLevelManifestAsync(string url)
         {
-            const string playlistRegex = @"\.\.\/[^\s]+?(?:ts|aac|mp4|vtt)(.+)?";
-            const string urlRegex = @"(?:URI=).https?:\/\/[\da-z\.]+\.[a-z\.]{2,6}[\/\w \.-](.+?)\/(.+?)""";
-            // The regex captures URI="https://blab123labla.anything.anything.anything/{1}/{2}"
-
             var content = await GetRawContentAsync(url);
+            return CustomizeSecondLevelManifestAsync(content, url);
+        }
 
+        public string CustomizeSecondLevelManifestAsync(string content, string url)
+        {
             content = ConvertRelativeUrlsToAbsolute(content, url);
             return content;
         }
 
 
-        private static string GetAbsoluteBaseUrl(string url)
+        private static string GetBaseUrl(string url)
         {
             return url.Substring(0, url.LastIndexOf("/"));
         }
 
         private static string ConvertRelativeUrlsToAbsolute(string manifest, string manifestUrl)
         {
-            var queryParams = manifestUrl[manifestUrl.IndexOf("?")..];
-            var baseUrl = GetAbsoluteBaseUrl(manifestUrl);
+            var baseUrl = GetBaseUrl(manifestUrl);
+            string queryParams = null;
+            if (manifestUrl.IndexOf("?") != -1)
+            {
+                queryParams = manifestUrl[(manifestUrl.IndexOf("?") + 1)..];
+            }
             // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.1
             // Lines not starting with # is a file/playlist url.
             // If relative, make it absolute.
-            manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", baseUrl + "/$&" + queryParams, RegexOptions.Multiline);
-            manifest = Regex.Replace(manifest, @"URI=""(?!https?:\/\/)(.+?)""", $"URI=\"{baseUrl}/$1{queryParams}\"");
+            manifest = Regex.Replace(
+                manifest,
+                @"^(?!https?:\/\/)[^#\s].+",
+                m => {
+                    return CombineUrl(baseUrl, "/" + m.Value, queryParams);
+                },
+                RegexOptions.Multiline
+            );
+
+            manifest = Regex.Replace(
+                manifest,
+                @"URI=""(?!https?:\/\/)(.+?)""",
+                m => {
+                    var newUrl = CombineUrl(baseUrl, "/" + m.Groups[1], queryParams);
+                    return $"URI=\"{newUrl}\"";
+                }
+            );
+
             return manifest;
         }
 
+        /** Path needs leading slash **/
+        public static string CombineUrl(string baseUrl, string path, string queryParams = null)
+        {
+            var absoluteUrl = baseUrl + path;
+            if (!string.IsNullOrWhiteSpace(queryParams))
+            {
+                var querySeperator = path.Contains("?") ? "&" : "?";
+                absoluteUrl += querySeperator + queryParams;
+            }
+            return absoluteUrl;
+        }
 
         private async Task<string> GetRawContentAsync(string uri)
         {

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -13,6 +13,12 @@
     <UserSecretsId>e132fbb1-d795-4958-8b9e-b2a448c601da</UserSecretsId>
     <ApplicationInsightsResourceId>/subscriptions/304b13b9-d4b5-4016-bb0c-52b4b37213e0/resourcegroups/btv-streaming/providers/Microsoft.Insights/components/LivestreamFunctions</ApplicationInsightsResourceId>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="LivestreamFunctions.Tests\**" />
+    <Content Remove="LivestreamFunctions.Tests\**" />
+    <EmbeddedResource Remove="LivestreamFunctions.Tests\**" />
+    <None Remove="LivestreamFunctions.Tests\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront" Version="3.7.4.9" />

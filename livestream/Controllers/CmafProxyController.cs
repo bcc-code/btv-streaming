@@ -72,7 +72,7 @@ namespace LivestreamFunctions
 
             var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);
 
-            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifestForToken(url, secondLevelProxyUrl);
+            var manifest = await _proxyService.RetrieveAndModifyTopLevelManifest(url, secondLevelProxyUrl);
             if (audio_only)
             {
                 manifest = _proxyService.ModifyManifestToBeAudioOnly(manifest, language);
