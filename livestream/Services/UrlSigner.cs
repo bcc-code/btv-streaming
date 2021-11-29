@@ -1,14 +1,7 @@
 using Amazon.CloudFront;
-using Amazon.S3;
-using Amazon.S3.Model;
 using LazyCache;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace LivestreamFunctions.Services
 {
@@ -18,8 +11,6 @@ namespace LivestreamFunctions.Services
         private readonly IAmazonCloudFront _cfClient;
         private readonly string _privateKey;
         private readonly string _keyPairId;
-        private readonly string _s3KeyBucketName;
-        private readonly string _dashKeyGroup;
 
         public UrlSigner(IAppCache cache, IAmazonCloudFront cfClient, string privateKey, string keyPairId)
         {
@@ -27,15 +18,6 @@ namespace LivestreamFunctions.Services
             _cfClient = cfClient;
             _privateKey = privateKey;
             _keyPairId = keyPairId;
-        }
-
-        public class UrlSigningConfig
-        {
-            public string PolicyTemplate { get; set; }
-            public string XmlPrivateKey { get; set; }
-            public string PrivateKeyId { get; set; }
-            public string Url { get; set; }
-            public TimeSpan ExpiresAfter { get; set; }
         }
 
         public string Sign(string url)

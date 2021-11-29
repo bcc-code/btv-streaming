@@ -9,6 +9,7 @@ using Microsoft.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Linq;
 
 namespace LivestreamFunctions
 {
@@ -48,6 +49,18 @@ namespace LivestreamFunctions
             if (string.IsNullOrEmpty(token))
             {
                 return new BadRequestObjectResult("Missing parameters");
+            }
+
+            Uri uri;
+            if (!Uri.TryCreate(playback_url, UriKind.Absolute, out uri))
+            {
+                return BadRequest("Bad uri: " + playback_url);
+            }
+
+            var allowedHosts = _liveOptions.GetAllowedHosts().Split(",");
+            if (!allowedHosts.Contains(uri.Host.ToLower()))
+            {
+                return BadRequest("Host not allowed: " + uri.Host);
             }
 
             var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme); ;

@@ -46,8 +46,12 @@ namespace LivestreamFunctions
             var s3KeyBucketName = Configuration["S3KeyBucketName"];
             var dashKeyGroup = Configuration["DASHKeyGroup"];
 
-            var livestreamOptions = new LivestreamOptions();
-            services.AddOptions<LivestreamOptions>().Bind(Configuration.GetSection(LivestreamOptions.ConfigurationSection));
+            var livestreamConfigSection = Configuration.GetSection("Live");
+            // The following throws exceptions on invalid urls
+            _ = new Uri(livestreamConfigSection["HlsUrl"], UriKind.Absolute);
+            _ = new Uri(livestreamConfigSection["HlsUrl2"], UriKind.Absolute);
+            services.AddOptions<LivestreamOptions>().Bind(livestreamConfigSection);
+
             services.AddControllers();
             services.AddHttpClient();
             services.AddLazyCache();

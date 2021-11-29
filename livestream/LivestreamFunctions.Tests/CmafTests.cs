@@ -52,7 +52,7 @@ namespace LivestreamFunctions.Tests
         {
             var manifest = _manifests["master.m3u8"];
             var expected = _expected["master.m3u8"];
-            var result = _proxy.CustomizeTopLevelManifest(manifest, "https://cdn.example.com/livestream/master.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345", "https://secondlevel.example.com/api/cmaf-proxy");
+            var result = _proxy.CustomizeTopLevelManifest(manifest, "https://cdn.example.com/livestream/master_playlist.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345", "https://secondlevel.example.com/api/cmaf-proxy");
             Assert.AreEqual(expected, result);
         }
 
@@ -61,7 +61,7 @@ namespace LivestreamFunctions.Tests
         {
             var manifest = _manifests["video.m3u8"];
             var expected = _expected["video.m3u8"];
-            var result = _proxy.CustomizeSecondLevelManifestAsync(manifest, "https://cdn.example.com/livestream/video.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345");
+            var result = _proxy.CustomizeSecondLevelManifestAsync(manifest, "https://cdn.example.com/livestream/video_1.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345");
             Assert.AreEqual(expected, result);
         }
 
@@ -70,7 +70,7 @@ namespace LivestreamFunctions.Tests
         {
             var manifest = _manifests["audio.m3u8"];
             var expected = _expected["audio.m3u8"];
-            var result = _proxy.CustomizeSecondLevelManifestAsync(manifest, "https://cdn.example.com/livestream/audio.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345");
+            var result = _proxy.CustomizeSecondLevelManifestAsync(manifest, "https://cdn.example.com/livestream/audio_1_2.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345");
             Assert.AreEqual(expected, result);
         }
 
@@ -79,7 +79,7 @@ namespace LivestreamFunctions.Tests
         {
             var manifest = _manifests["iframe.m3u8"];
             var expected = _expected["iframe.m3u8"];
-            var result = _proxy.CustomizeSecondLevelManifestAsync(manifest, "https://cdn.example.com/livestream/iframe.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345");
+            var result = _proxy.CustomizeSecondLevelManifestAsync(manifest, "https://cdn.example.com/livestream/iframe_1_2_3.m3u8?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345");
             Assert.AreEqual(expected, result);
         }
 

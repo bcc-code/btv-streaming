@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace LivestreamFunctions
 {
@@ -68,6 +69,18 @@ namespace LivestreamFunctions
                 {
                     return BadRequest("Missing parameters");
                 }
+            }
+
+            Uri uri;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
+            {
+                return BadRequest("Bad uri: " + url);
+            }
+
+            var allowedHosts = _liveOptions.GetAllowedHosts().Split(",");
+            if (!allowedHosts.Contains(uri.Host.ToLower()))
+            {
+                return BadRequest("Host not allowed: " + uri.Host);
             }
 
             var secondLevelProxyUrl = Url.Action("GetSecondLevelManifest", null, null, Request.Scheme);

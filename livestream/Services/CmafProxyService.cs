@@ -1,18 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Net.Http;
-using Microsoft.AspNetCore.Http;
-using System.Globalization;
 
-    namespace LivestreamFunctions.Services
+namespace LivestreamFunctions.Services
 {
     public class CmafProxyService
     {
@@ -51,7 +45,7 @@ using System.Globalization;
                 var combinedUrl = CombineUrl(topLevelManifestBaseUrl, "/" + path, queryParams);
                 return $"{proxySecondLevelBaseUrl}?url={HttpUtility.UrlEncode(combinedUrl)}";
             }
-            // TODO changes 29/11 took it too far here possibly
+
             manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", (Match m) => generateSecondLevelProxyUrl(m.Value), RegexOptions.Multiline);
             manifest = Regex.Replace(manifest, @"URI=""(?!https?:\/\/)(.+?)""", m => $"URI=\"{generateSecondLevelProxyUrl(m.Groups[1].Value)}\"");
             manifest = SortAudioTracks(manifest);
