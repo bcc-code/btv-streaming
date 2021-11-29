@@ -9,6 +9,7 @@ COPY ["LivestreamFunctions.csproj", ""]
 RUN dotnet restore "./LivestreamFunctions.csproj"
 COPY . .
 WORKDIR "/src/."
+RUN dotnet test
 RUN dotnet build "LivestreamFunctions.csproj" -c Release -o /app/build
 
 FROM build AS publish
