@@ -37,6 +37,7 @@ steps:
       - services
       - update-traffic
       - $_SERVICE_NAME
+      - '--region=$_DEPLOY_REGION'
       - '--platform=managed'
       - '--to-latest'
       - '--quiet'
