@@ -67,7 +67,7 @@ namespace LivestreamFunctions
             var keyPairId = Configuration["CFKeyPairId"];
             services.AddSingleton<IAmazonS3>((s) => new AmazonS3Client(awsCredentials, RegionEndpoint.EUNorth1));
             services.AddSingleton<IAmazonCloudFront>((s) => new AmazonCloudFrontClient(awsCredentials, RegionEndpoint.EUNorth1));
-            services.AddSingleton<UrlSigner>((s) => new UrlSigner(s.GetRequiredService<IAppCache>(), s.GetRequiredService<IAmazonCloudFront>(), privateKey, keyPairId));
+            services.AddSingleton((s) => new UrlSigner(s.GetRequiredService<IAmazonCloudFront>(), privateKey, keyPairId));
             services.AddCors(options => {
                 options.AddPolicy("All", builder => {
                     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();

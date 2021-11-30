@@ -7,21 +7,23 @@ namespace LivestreamFunctions.Services
 {
     public class UrlSigner
     {
-        private readonly IAppCache _cache;
         private readonly IAmazonCloudFront _cfClient;
         private readonly string _privateKey;
         private readonly string _keyPairId;
 
-        public UrlSigner(IAppCache cache, IAmazonCloudFront cfClient, string privateKey, string keyPairId)
+        public UrlSigner(IAmazonCloudFront cfClient, string privateKey, string keyPairId)
         {
-            _cache = cache;
             _cfClient = cfClient;
             _privateKey = privateKey;
             _keyPairId = keyPairId;
         }
 
-        public string Sign(string url)
+        public string Sign(string url, DateTime expiry = default)
         {
+            if (expiry == default)
+            {
+                expiry = DateTime.Now.AddHours(6);
+            }
             using var privateKeyReader = new StringReader(_privateKey);
             Uri uri;
             if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
@@ -34,7 +36,7 @@ namespace LivestreamFunctions.Services
                 privateKeyReader,
                 "*",
                 _keyPairId,
-                DateTime.Now.AddHours(6),
+                expiry,
                 null);
             
             var queryParams = tempUrl[(tempUrl.IndexOf("?") + 1)..];
