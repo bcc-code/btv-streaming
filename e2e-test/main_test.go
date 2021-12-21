@@ -75,7 +75,7 @@ func TestURLFlow_Cmaf(t *testing.T) {
 	token, err := getAuthToken()
 	assert.NoError(t, err)
 
-	link := "https://livestreamfunctions.brunstad.tv/api/urls/live"
+	link := os.Getenv("URLDELIVERY_URL")
 
 	req, err := http.NewRequest("GET", link, nil)
 	assert.NoError(t, err)
@@ -97,7 +97,7 @@ func TestURLFlow_Cmaf(t *testing.T) {
 	parsedURL, err := url.Parse(urlRes.URL)
 	assert.NoError(t, err)
 	assert.Empty(t, parsedURL.Fragment)
-	assert.Equal(t, "livestreamfunctions.brunstad.tv", parsedURL.Host)
+	assert.Equal(t, os.Getenv("PROXY_HOST"), parsedURL.Host)
 	assert.Equal(t, "/api/cmaf-proxy/top-level", parsedURL.Path)
 	assert.Equal(t, "https", parsedURL.Scheme)
 
@@ -106,7 +106,7 @@ func TestURLFlow_Cmaf(t *testing.T) {
 	parsedInnerURL, err := url.Parse(q.Get("url"))
 	assert.NoError(t, err)
 	assert.Empty(t, parsedInnerURL.Fragment)
-	assert.Equal(t, "live.stream.brunstad.tv", parsedInnerURL.Host)
+	assert.Equal(t, os.Getenv("STREAM_HOST"), parsedInnerURL.Host)
 	assert.Regexp(t, os.Getenv("TEST_REGEX_INNER_PATH_1"), parsedInnerURL.Path)
 	assert.Equal(t, "https", parsedInnerURL.Scheme)
 
@@ -114,7 +114,7 @@ func TestURLFlow_Cmaf(t *testing.T) {
 	parsedToken, err := jwt.Parse([]byte(q.Get("token")))
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"urn:brunstadtv"}, parsedToken.Audience())
-	assert.True(t, parsedToken.Expiration().After(time.Now()))
+	assert.True(t, parsedToken.Expiration().After(time.Now().Add(5*time.Hour)))
 	assert.True(t, parsedToken.IssuedAt().Before(time.Now()))
 	assert.Equal(t, "https://brunstad.tv", parsedToken.Issuer())
 
