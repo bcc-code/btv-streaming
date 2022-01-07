@@ -61,12 +61,18 @@ namespace LivestreamFunctions.Services
             var tolkLine = lines.FirstOrDefault(line => line.Contains("LANGUAGE=\"no-x-tolk\"", StringComparison.InvariantCultureIgnoreCase));
             if (string.IsNullOrEmpty(tolkLine)) return manifest;
 
-            lines.Remove(tolkLine);
-
             var norwegianLineIndex = lines.FindIndex(l => l.Contains("LANGUAGE=\"nor\"", StringComparison.InvariantCultureIgnoreCase));
             if (norwegianLineIndex == -1) return manifest;
-
-            lines.Insert(norwegianLineIndex+1, tolkLine);
+            
+            try
+            {
+                lines.Remove(tolkLine);
+                lines.Insert(norwegianLineIndex+1, tolkLine);
+            }
+            catch (Exception)
+            {
+                return manifest;
+            }
 
             return string.Join('\n', lines);
         }
@@ -78,17 +84,23 @@ namespace LivestreamFunctions.Services
             var line540Index = lines.FindIndex(line => line.Contains("RESOLUTION=960x540", StringComparison.InvariantCultureIgnoreCase));
             if (line540Index == -1) return manifest;
 
+            var topLineIndex = lines.FindIndex(l => l.Contains("#EXT-X-INDEPENDENT-SEGMENTS", StringComparison.InvariantCultureIgnoreCase));
+            if (topLineIndex == -1) return manifest;
+
             var line540text = lines[line540Index];
             var line540url = lines[line540Index+1];
 
-            lines.RemoveAt(line540Index);
-            lines.RemoveAt(line540Index); // twice to remove url as well
+            try
+            {
+                lines.RemoveAt(line540Index);
+                lines.RemoveAt(line540Index); // twice to remove url as well
 
-            var topLineIndex = lines.FindIndex(l => l.Contains("#EXT-X-INDEPENDENT-SEGMENTS", StringComparison.InvariantCultureIgnoreCase));
-            if (topLineIndex == -1) return manifest;
-            
-            lines.Insert(topLineIndex + 1, line540url);
-            lines.Insert(topLineIndex + 1, line540text);
+                lines.Insert(topLineIndex + 1, line540url);
+                lines.Insert(topLineIndex + 1, line540text);
+            } catch (Exception)
+            {
+                return manifest;
+            }
 
             return string.Join('\n', lines);
         }
