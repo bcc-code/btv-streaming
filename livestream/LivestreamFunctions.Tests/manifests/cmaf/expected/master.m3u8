@@ -1,14 +1,14 @@
 #EXTM3U
 #EXT-X-VERSION:6
 #EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-STREAM-INF:BANDWIDTH=2741164,AVERAGE-BANDWIDTH=2741164,RESOLUTION=960x540,FRAME-RATE=50.000,CODECS="avc1.4D401F,mp4a.40.2",SUBTITLES="subtitles",AUDIO="audio_0"
+https://secondlevel.example.com/api/cmaf-proxy?url=https%3a%2f%2fcdn.example.com%2flivestream%2findex_4.m3u8%3fPolicy%3deyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ%26Signature%3d_Sx%7eD6IKsm-qfeTY_xuNeL56f%7emr-F-i%7e_%26Key-Pair-ID%3dABCD12345
 #EXT-X-STREAM-INF:BANDWIDTH=332147,AVERAGE-BANDWIDTH=332147,RESOLUTION=224x126,FRAME-RATE=50.000,CODECS="avc1.42C00C,mp4a.40.2",SUBTITLES="subtitles",AUDIO="audio_0"
 https://secondlevel.example.com/api/cmaf-proxy?url=https%3a%2f%2fcdn.example.com%2flivestream%2findex_2.m3u8%3fm%3d123%26Policy%3deyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ%26Signature%3d_Sx%7eD6IKsm-qfeTY_xuNeL56f%7emr-F-i%7e_%26Key-Pair-ID%3dABCD12345
 #EXT-X-STREAM-INF:BANDWIDTH=761164,AVERAGE-BANDWIDTH=761164,RESOLUTION=640x360,FRAME-RATE=50.000,CODECS="avc1.42C01F,mp4a.40.2",SUBTITLES="subtitles",AUDIO="audio_0"
 https://secondlevel.example.com/api/cmaf-proxy?url=https%3a%2f%2fcdn.example.com%2flivestream%2findex_1.m3u8%3fPolicy%3deyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ%26Signature%3d_Sx%7eD6IKsm-qfeTY_xuNeL56f%7emr-F-i%7e_%26Key-Pair-ID%3dABCD12345
 #EXT-X-STREAM-INF:BANDWIDTH=1531200,AVERAGE-BANDWIDTH=1531200,RESOLUTION=854x480,FRAME-RATE=50.000,CODECS="avc1.4D401F,mp4a.40.2",SUBTITLES="subtitles",AUDIO="audio_0"
 https://secondlevel.example.com/api/cmaf-proxy?url=https%3a%2f%2fcdn.example.com%2flivestream%2findex_5.m3u8%3fPolicy%3deyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ%26Signature%3d_Sx%7eD6IKsm-qfeTY_xuNeL56f%7emr-F-i%7e_%26Key-Pair-ID%3dABCD12345
-#EXT-X-STREAM-INF:BANDWIDTH=2741164,AVERAGE-BANDWIDTH=2741164,RESOLUTION=960x540,FRAME-RATE=50.000,CODECS="avc1.4D401F,mp4a.40.2",SUBTITLES="subtitles",AUDIO="audio_0"
-https://secondlevel.example.com/api/cmaf-proxy?url=https%3a%2f%2fcdn.example.com%2flivestream%2findex_4.m3u8%3fPolicy%3deyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ%26Signature%3d_Sx%7eD6IKsm-qfeTY_xuNeL56f%7emr-F-i%7e_%26Key-Pair-ID%3dABCD12345
 #EXT-X-STREAM-INF:BANDWIDTH=5711200,AVERAGE-BANDWIDTH=5711200,RESOLUTION=1280x720,FRAME-RATE=50.000,CODECS="avc1.640020,mp4a.40.2",SUBTITLES="subtitles",AUDIO="audio_0"
 https://secondlevel.example.com/api/cmaf-proxy?url=https%3a%2f%2fcdn.example.com%2flivestream%2findex_3.m3u8%3fPolicy%3deyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ%26Signature%3d_Sx%7eD6IKsm-qfeTY_xuNeL56f%7emr-F-i%7e_%26Key-Pair-ID%3dABCD12345
 #EXT-X-STREAM-INF:BANDWIDTH=9011200,AVERAGE-BANDWIDTH=9011200,RESOLUTION=1920x1080,FRAME-RATE=50.000,CODECS="avc1.64002A,mp4a.40.2",SUBTITLES="subtitles",AUDIO="audio_0"

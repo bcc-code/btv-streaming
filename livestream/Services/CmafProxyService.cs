@@ -49,6 +49,7 @@ namespace LivestreamFunctions.Services
             manifest = Regex.Replace(manifest, @"^(?!https?:\/\/)[^#\s].+", (Match m) => generateSecondLevelProxyUrl(m.Value), RegexOptions.Multiline);
             manifest = Regex.Replace(manifest, @"URI=""(?!https?:\/\/)(.+?)""", m => $"URI=\"{generateSecondLevelProxyUrl(m.Groups[1].Value)}\"");
             manifest = SortAudioTracks(manifest);
+            manifest = SortVideoTracks(manifest);
 
             return manifest;
         }
@@ -66,6 +67,28 @@ namespace LivestreamFunctions.Services
             if (norwegianLineIndex == -1) return manifest;
 
             lines.Insert(norwegianLineIndex+1, tolkLine);
+
+            return string.Join('\n', lines);
+        }
+
+        public string SortVideoTracks(string manifest)
+        {
+            var lines = manifest.Split('\n').ToList();
+
+            var line540Index = lines.FindIndex(line => line.Contains("RESOLUTION=960x540", StringComparison.InvariantCultureIgnoreCase));
+            if (line540Index == -1) return manifest;
+
+            var line540text = lines[line540Index];
+            var line540url = lines[line540Index+1];
+
+            lines.RemoveAt(line540Index);
+            lines.RemoveAt(line540Index); // twice to remove url as well
+
+            var topLineIndex = lines.FindIndex(l => l.Contains("#EXT-X-INDEPENDENT-SEGMENTS", StringComparison.InvariantCultureIgnoreCase));
+            if (topLineIndex == -1) return manifest;
+            
+            lines.Insert(topLineIndex + 1, line540url);
+            lines.Insert(topLineIndex + 1, line540text);
 
             return string.Join('\n', lines);
         }
