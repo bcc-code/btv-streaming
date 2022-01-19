@@ -110,7 +110,7 @@ namespace VODStreaming
             var allowedHosts = new string[] { "vod.brunstad.tv", "vod2.brunstad.tv" };
             Uri.TryCreate(playbackUrl, UriKind.Absolute, out var uri);
             var host = uri?.Host.ToLower();
-            if (host == null || allowedHosts.Contains(host))
+            if (host == null || !allowedHosts.Contains(host))
             {
                 return new BadRequestObjectResult("Invalid url or host not allowed.");
             }
