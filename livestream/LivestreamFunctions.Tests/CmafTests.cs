@@ -1,4 +1,5 @@
 using LivestreamFunctions.Services;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -19,7 +20,8 @@ namespace LivestreamFunctions.Tests
         {
             var logger = new Mock<ILogger<CmafProxyService>>();
             var httpClientFactory = new Mock<IHttpClientFactory>();
-            _proxy = new CmafProxyService(logger.Object, httpClientFactory.Object);
+            var memoryCache = new Mock<IMemoryCache>();
+            _proxy = new CmafProxyService(logger.Object, httpClientFactory.Object, memoryCache.Object);
 
             var expectedFolder = "./manifests/cmaf/expected";
             var sourceFolder = "./manifests/cmaf/source";

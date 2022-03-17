@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Net.Http;
+using LazyCache;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace LivestreamFunctions.Services
 {
@@ -12,11 +14,13 @@ namespace LivestreamFunctions.Services
     {
         private readonly ILogger<CmafProxyService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IMemoryCache _cache;
 
-        public CmafProxyService(ILogger<CmafProxyService> logger, IHttpClientFactory httpClientFactory)
+        public CmafProxyService(ILogger<CmafProxyService> logger, IHttpClientFactory httpClientFactory, IMemoryCache cache)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _cache = cache;
         }
 
         public async Task<string> RetrieveAndModifyTopLevelManifest(string topLevelManifestUrl, string proxySecondLevelBaseUrl)
@@ -207,12 +211,16 @@ namespace LivestreamFunctions.Services
 
         private async Task<string> GetRawContentAsync(string uri)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
+            var cacheKey = uri.Substring(0, uri.IndexOf("?"));
+            return await _cache.GetOrCreateAsync(cacheKey, async cacheEntry => {
+                var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
 
-            var client = _httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromSeconds(30);
-            var response = await client.SendAsync(httpRequest);
-            return await response.Content.ReadAsStringAsync();
+                var client = _httpClientFactory.CreateClient();
+                client.Timeout = TimeSpan.FromSeconds(5);
+                var response = await client.SendAsync(httpRequest);
+                cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMilliseconds(250);
+                return await response.Content.ReadAsStringAsync();
+            });
         }
     }
 }

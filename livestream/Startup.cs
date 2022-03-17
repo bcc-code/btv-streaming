@@ -54,6 +54,7 @@ namespace LivestreamFunctions
 
             services.AddControllers();
             services.AddHttpClient();
+            services.AddMemoryCache();
             services.AddLazyCache();
             services.AddSingleton(_ => new StreamingTokenHelper(jwtVerificationKey));
             services.AddSingleton(s => new KeyRepository(s.GetRequiredService<IAppCache>(), s.GetRequiredService<IAmazonS3>(), s3KeyBucketName, dashKeyGroup));
