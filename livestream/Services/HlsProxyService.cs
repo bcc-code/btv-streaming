@@ -118,6 +118,7 @@ namespace LivestreamFunctions.Services
             newContent = Regex.Replace(newContent, playlistRegex, m => string.Format(CultureInfo.InvariantCulture, baseUrl + "/" + m.Value));
             newContent = newContent.Replace("#EXT-X-VERSION:3", "#EXT-X-VERSION:7");
             newContent = newContent.Replace("#EXT-X-TARGETDURATION:12", "#EXT-X-TARGETDURATION:6");
+            newContent = newContent.Replace("#EXT-X-TARGETDURATION:9", "#EXT-X-TARGETDURATION:6");
             return newContent;
         }
 
