@@ -152,6 +152,7 @@ namespace LivestreamFunctions.Services
         public string CustomizeSecondLevelManifestAsync(string content, string url)
         {
             content = ConvertRelativeUrlsToAbsolute(content, url);
+            content = content.Replace("#EXT-X-TARGETDURATION:9", "#EXT-X-TARGETDURATION:6");
             return content;
         }
 
