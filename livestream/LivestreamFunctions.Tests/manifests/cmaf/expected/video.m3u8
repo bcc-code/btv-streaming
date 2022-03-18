@@ -1,7 +1,7 @@
 #EXTM3U
 #EXT-X-VERSION:6
 #EXT-X-INDEPENDENT-SEGMENTS
-#EXT-X-TARGETDURATION:9
+#EXT-X-TARGETDURATION:6
 #EXT-X-MEDIA-SEQUENCE:256249
 #EXT-X-MAP:URI="https://cdn.example.com/livestream/../segment_video_1_track_426047943_csid_341e77c78ca54300b864ed7fa83d6c29_2_init.mp4?Policy=eyJzb21ldGhpbmciOiJzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmdzb21ldGhpbmcifQ&Signature=_Sx~D6IKsm-qfeTY_xuNeL56f~mr-F-i~_&Key-Pair-ID=ABCD12345"
 #EXT-X-DISCONTINUITY-SEQUENCE:10
