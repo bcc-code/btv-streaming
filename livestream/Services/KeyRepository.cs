@@ -41,7 +41,7 @@ namespace LivestreamFunctions.Services
             using var response = await _s3Client.GetObjectAsync(request);
             using var ms = new MemoryStream();
 
-            await response.ResponseStream.CopyToAsync(ms);
+            response.ResponseStream.CopyTo(ms);
             return ms.ToArray();
         }
 
