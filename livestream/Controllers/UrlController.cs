@@ -29,15 +29,27 @@ namespace LivestreamFunctions
 
         [HttpGet("live")]
         [EnableCors("All")]
-        public ActionResult<UrlDto> GetHls()
+        public ActionResult<UrlDto> GetHls(string experiment = null)
         {
             var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
             var token = _streamingTokenHelper.Generate(expiryTime);
 
-            var url = _urlSigner.Sign(_liveOptions.Value.HlsUrl2);
+            string url;
+            if (experiment?.ToLower() == "v2")
+            {
+                url = _urlSigner.Sign(_liveOptions.Value.HlsUrlCmafV2);
+            } else
+            {
+                var signedUrl = _urlSigner.Sign(_liveOptions.Value.HlsUrl2);
+                url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme)
+                    + "?url="
+                    + HttpUtility.UrlEncode(signedUrl)
+                    + "&token="
+                    + token;
+            }
 
             return new UrlDto {
-                Url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme) + "?url=" + HttpUtility.UrlEncode(url) + "&token=" + token,
+                Url = url,
                 ExpiryTime = expiryTime
             };
         }

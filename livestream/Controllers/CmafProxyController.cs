@@ -77,8 +77,7 @@ namespace LivestreamFunctions
                 return BadRequest("Bad uri: " + url);
             }
 
-            var allowedHosts = _liveOptions.GetAllowedHosts().Split(",");
-            if (!allowedHosts.Contains(uri.Host.ToLower()))
+            if (!_liveOptions.GetAllowedHosts().Contains(uri.Host.ToLower()))
             {
                 return BadRequest("Host not allowed: " + uri.Host);
             }

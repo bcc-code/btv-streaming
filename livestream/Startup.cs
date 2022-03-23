@@ -50,6 +50,7 @@ namespace LivestreamFunctions
             // The following throws exceptions on invalid urls
             _ = new Uri(livestreamConfigSection["HlsUrl"], UriKind.Absolute);
             _ = new Uri(livestreamConfigSection["HlsUrl2"], UriKind.Absolute);
+            _ = new Uri(livestreamConfigSection["HlsUrlCmafV2"], UriKind.Absolute);
             services.AddOptions<LivestreamOptions>().Bind(livestreamConfigSection);
 
             services.AddControllers();

@@ -9,16 +9,20 @@ namespace LivestreamFunctions.Model
     {
         public string HlsUrl { get; set; }
         public string HlsUrl2 { get; set; }
+        public string HlsUrlCmafV2 { get; set; }
         public string ExtraHosts { get; set; }
-        public string GetAllowedHosts() {
-            var hlsUrl = new Uri(HlsUrl, UriKind.Absolute);
-            var hlsUrl2 = new Uri(HlsUrl2, UriKind.Absolute);
-            var allowedHosts = hlsUrl.Host + "," + hlsUrl2.Host;
+        public List<string> GetAllowedHosts() {
+            var allowedHosts = new List<string>
+            {
+                new Uri(HlsUrl, UriKind.Absolute).Host,
+                new Uri(HlsUrl2, UriKind.Absolute).Host,
+                new Uri(HlsUrlCmafV2, UriKind.Absolute).Host
+            };
             if (!string.IsNullOrWhiteSpace(ExtraHosts))
             {
-                allowedHosts += "," + ExtraHosts;
+                allowedHosts.AddRange(ExtraHosts.Split(','));
             }
-            return allowedHosts.ToLowerInvariant();
+            return allowedHosts;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace LivestreamFunctions.Services
                 throw new ApplicationException("url is not valid: " + url);
             }
             var tempUrl = AmazonCloudFrontUrlSigner.GetCustomSignedURL(
-                AmazonCloudFrontUrlSigner.Protocol.https,
+                uri.Scheme == "http" ? AmazonCloudFrontUrlSigner.Protocol.http : AmazonCloudFrontUrlSigner.Protocol.https,
                 uri.Host.ToLower(),
                 privateKeyReader,
                 "*",
