@@ -1,13 +1,13 @@
 using LivestreamFunctions.Model;
 using LivestreamFunctions.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Web;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace LivestreamFunctions
 {
@@ -35,10 +35,7 @@ namespace LivestreamFunctions
             var token = _streamingTokenHelper.Generate(expiryTime);
 
             string url;
-            if (experiment?.ToLower() == "v2")
-            {
-                url = _urlSigner.Sign(_liveOptions.Value.HlsUrlCmafV2);
-            } else
+            if (experiment?.ToLower() == "v1")
             {
                 var signedUrl = _urlSigner.Sign(_liveOptions.Value.HlsUrl2);
                 url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme)
@@ -46,6 +43,10 @@ namespace LivestreamFunctions
                     + HttpUtility.UrlEncode(signedUrl)
                     + "&token="
                     + token;
+            } else
+            {
+                url = _urlSigner.Sign(_liveOptions.Value.HlsUrlCmafV2);
+                url = _liveOptions.Value.HlsUrlCmafV2 + "?EncodedPolicy=" + HttpUtility.UrlEncode(url.Substring(url.IndexOf("?Policy")+1));
             }
 
             return new UrlDto {
