@@ -46,7 +46,11 @@ namespace LivestreamFunctions
             } else
             {
                 url = _urlSigner.Sign(_liveOptions.Value.HlsUrlCmafV2);
-                url = _liveOptions.Value.HlsUrlCmafV2 + "?EncodedPolicy=" + HttpUtility.UrlEncode(url.Substring(url.IndexOf("?Policy")+1));
+                url = _liveOptions.Value.HlsUrlCmafV2
+                + "?EncodedPolicy="
+                + HttpUtility.UrlEncode(url.Substring(url.IndexOf("?Policy")+1))
+                + "&token="
+                + token;
             }
 
             return new UrlDto {
