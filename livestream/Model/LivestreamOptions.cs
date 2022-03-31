@@ -11,6 +11,8 @@ namespace LivestreamFunctions.Model
         public string HlsUrl2 { get; set; }
         public string HlsUrlCmafV2 { get; set; }
         public string ExtraHosts { get; set; }
+        public string PureUrl { get; set; }
+        public bool UsePureUrl { get; set; } = false;
         public List<string> GetAllowedHosts() {
             var allowedHosts = new List<string>
             {

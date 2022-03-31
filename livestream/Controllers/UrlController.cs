@@ -31,6 +31,13 @@ namespace LivestreamFunctions
         [EnableCors("All")]
         public ActionResult<UrlDto> GetHls(string experiment = null)
         {
+            if (_liveOptions.Value.UsePureUrl) {
+                return new UrlDto {
+                    Url = _liveOptions.Value.PureUrl,
+                    ExpiryTime = DateTimeOffset.UtcNow.AddHours(6)
+                };
+            }
+            
             var expiryTime = DateTimeOffset.UtcNow.AddHours(6);
             var token = _streamingTokenHelper.Generate(expiryTime);
 
