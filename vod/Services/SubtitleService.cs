@@ -33,7 +33,7 @@ namespace VODStreaming.Services
             var container = _serviceClient.GetBlobContainerClient("subtitles");
 
             var subtitles = new List<Subtitle>();
-            await foreach (var s in container.GetBlobsAsync(prefix: filename[..^4]))
+            await foreach (var s in container.GetBlobsAsync(prefix: filename))
             {
                 subtitles.Add(new Subtitle()
                 {
