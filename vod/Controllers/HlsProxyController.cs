@@ -107,7 +107,7 @@ namespace VODStreaming
                 return new BadRequestObjectResult("Missing parameters");
             }
 
-            var allowedHosts = new string[] { "vod.brunstad.tv", "vod2.brunstad.tv" };
+            var allowedHosts = new string[]{ "vod.brunstad.tv", "vod2.brunstad.tv", "vod-dev.stream.brunstad.tv", "vod-sta.stream.brunstad.tv", "vod.stream.brunstad.tv"};
             Uri.TryCreate(playbackUrl, UriKind.Absolute, out var uri);
             var host = uri?.Host.ToLower();
             if (host == null || !allowedHosts.Contains(host))
