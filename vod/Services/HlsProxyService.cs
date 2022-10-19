@@ -131,8 +131,8 @@ namespace VODStreaming.Services
             Func<(string url, string token), string> getSecondLevelProxyUrl,
             string manifest)
         {
-            manifest = Regex.Replace(manifest, @"^https:\/\/vod2?\.brunstad\.tv\/.+$", m => getSecondLevelProxyUrl((m.Value, "TOKENPLACEHOLDER")), RegexOptions.Multiline);
-            manifest = Regex.Replace(manifest, @"URI=""(https:\/\/vod2?\.brunstad\.tv.+?)""", m => "URI=\"" + getSecondLevelProxyUrl((m.Groups[1]?.Value, "TOKENPLACEHOLDER")) + "\"");
+            manifest = Regex.Replace(manifest, @"^https:\/\/vod2?(?:\.stream)?\.brunstad\.tv\/.+$", m => getSecondLevelProxyUrl((m.Value, "TOKENPLACEHOLDER")), RegexOptions.Multiline);
+            manifest = Regex.Replace(manifest, @"URI=""(https:\/\/vod2?(?:\.stream)?\.brunstad\.tv.+?)""", m => "URI=\"" + getSecondLevelProxyUrl((m.Groups[1]?.Value, "TOKENPLACEHOLDER")) + "\"");
             return manifest;
         }
 
