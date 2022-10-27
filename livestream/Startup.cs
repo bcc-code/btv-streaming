@@ -128,7 +128,10 @@ namespace LivestreamFunctions
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors();
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            });
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
