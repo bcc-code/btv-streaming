@@ -27,6 +27,7 @@ namespace LivestreamFunctions
             _urlSigner = urlSigner;
         }
 
+        [HttpOptions("live")]
         [HttpHead("live")]
         [HttpGet("live")]
         [EnableCors("All")]
@@ -67,7 +68,8 @@ namespace LivestreamFunctions
             };
         }
 
-        [HttpHead("live")]
+        [HttpOptions("live-audio")]
+        [HttpHead("live-audio")]
         [HttpGet("live-audio")]
         [EnableCors("All")]
         public ActionResult<UrlDto> GetLiveAudioOnlyUrl(string language = null)
