@@ -13,7 +13,6 @@ namespace LivestreamFunctions
 {
     [ApiController]
     [Route("api/urls")]
-    [Authorize]
     public class UrlController : ControllerBase
     {
         private readonly StreamingTokenHelper _streamingTokenHelper;
@@ -26,9 +25,16 @@ namespace LivestreamFunctions
             _liveOptions = liveOptions;
             _urlSigner = urlSigner;
         }
-
+        
         [HttpOptions("live")]
-        [HttpHead("live")]
+        [HttpOptions("live-audio")]
+        [EnableCors("All")]
+        public ActionResult GetHeadersForOptionsRequests()
+        {
+            return Content("", "application/json", Encoding.UTF8);
+        }
+
+        [Authorize]
         [HttpGet("live")]
         [EnableCors("All")]
         public ActionResult<UrlDto> GetHls(string experiment = null)
@@ -68,8 +74,7 @@ namespace LivestreamFunctions
             };
         }
 
-        [HttpOptions("live-audio")]
-        [HttpHead("live-audio")]
+        [Authorize]
         [HttpGet("live-audio")]
         [EnableCors("All")]
         public ActionResult<UrlDto> GetLiveAudioOnlyUrl(string language = null)
