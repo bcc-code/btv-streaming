@@ -71,7 +71,7 @@ namespace LivestreamFunctions
             services.AddSingleton((s) => new UrlSigner(s.GetRequiredService<IAmazonCloudFront>(), privateKey, keyPairId));
             services.AddCors(options => {
                 options.AddPolicy("All", builder => {
-                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
             });
 
