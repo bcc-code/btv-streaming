@@ -69,11 +69,7 @@ namespace LivestreamFunctions
             services.AddSingleton<IAmazonS3>((s) => new AmazonS3Client(awsCredentials, RegionEndpoint.EUNorth1));
             services.AddSingleton<IAmazonCloudFront>((s) => new AmazonCloudFrontClient(awsCredentials, RegionEndpoint.EUNorth1));
             services.AddSingleton((s) => new UrlSigner(s.GetRequiredService<IAmazonCloudFront>(), privateKey, keyPairId));
-            services.AddCors(options => {
-                options.AddPolicy("All", builder => {
-                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-                });
-            });
+            services.AddCors();
 
             services.AddAuthorization(options => {
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
