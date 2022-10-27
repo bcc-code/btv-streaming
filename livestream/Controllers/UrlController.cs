@@ -28,7 +28,6 @@ namespace LivestreamFunctions
         }
 
         [HttpGet("live")]
-        [EnableCors("All")]
         public ActionResult<UrlDto> GetHls(string experiment = null)
         {
             if (_liveOptions.Value.UsePureUrl) {
@@ -67,7 +66,6 @@ namespace LivestreamFunctions
         }
 
         [HttpGet("live-audio")]
-        [EnableCors("All")]
         public ActionResult<UrlDto> GetLiveAudioOnlyUrl(string language = null)
         {
             var url = Url.Action("GetTopLevelManifest", "CmafProxy", null, Request.Scheme);
