@@ -1,6 +1,5 @@
 using LivestreamFunctions.Model;
 using LivestreamFunctions.Services;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -43,7 +42,6 @@ namespace LivestreamFunctions
         }
 
         [HttpGet("top-level")]
-        [EnableCors("All")]
         public async Task<IActionResult> GetTopLevelManifest(string token, string playback_url = null, bool audio_only = false, string language = null)
         {
             if (string.IsNullOrEmpty(token))
@@ -80,7 +78,6 @@ namespace LivestreamFunctions
         }
 
         [HttpGet("second-level")]
-        [EnableCors("All")]
         public async Task<IActionResult> GetSecondLevelManifest(string token, string url)
         {
             var allowedHost = new Uri(_liveOptions.HlsUrl).Host.ToLower();

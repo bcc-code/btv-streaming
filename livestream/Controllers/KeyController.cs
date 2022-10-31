@@ -1,5 +1,4 @@
 using LivestreamFunctions.Services;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -24,7 +23,6 @@ namespace LivestreamFunctions
         }
 
         [HttpGet("{keyGroup}/{keyId}")]
-        [EnableCors("All")]
         public async Task<IActionResult> GetByKeyAndGroup(string keyGroup, string keyId, string token)
         {
             if (string.IsNullOrEmpty(keyGroup) || string.IsNullOrEmpty(keyId) || string.IsNullOrEmpty(token))
@@ -45,7 +43,6 @@ namespace LivestreamFunctions
         [HttpPost]
         [HttpGet]
         [Route("/api/widevine/getLicense")]
-        [EnableCors("All")]
         public async Task<IActionResult> GetLicense(string token)
         {
             var json = await new StreamReader(Request.Body).ReadToEndAsync();
