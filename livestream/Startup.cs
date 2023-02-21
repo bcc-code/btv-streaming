@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.CloudFront;
 using Amazon.Runtime;
 using Amazon.S3;
+using BrunstadTV.VOD.WebClient.Authorization;
 using LazyCache;
 using LivestreamFunctions.Model;
 using LivestreamFunctions.Services;
@@ -75,6 +76,7 @@ namespace LivestreamFunctions
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
+                    .AddRequirements(new MembershipAuthorizationRequirement())
                     .Build();
             });
 
