@@ -79,6 +79,7 @@ namespace LivestreamFunctions
                     .AddRequirements(new MembershipAuthorizationRequirement())
                     .Build();
             });
+            services.AddSingleton<IAuthorizationHandler, MembershipAuthorizationRequirementHandler>();
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -89,8 +90,7 @@ namespace LivestreamFunctions
                 options.TokenValidationParameters.ValidateAudience = false;
             });
 
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
+            services.Configure<ForwardedHeadersOptions>(options => {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                 options.KnownNetworks.Clear();
@@ -108,8 +108,7 @@ namespace LivestreamFunctions
                 options.EnableForHttps = true;
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/vnd.apple.mpegurl" });
             });
-            services.Configure<GzipCompressionProviderOptions>(options =>
-            {
+            services.Configure<GzipCompressionProviderOptions>(options => {
                 options.Level = CompressionLevel.Fastest;
             });
         }
@@ -126,8 +125,7 @@ namespace LivestreamFunctions
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(builder =>
-            {
+            app.UseCors(builder => {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
             });
             app.UseEndpoints(endpoints => {
