@@ -100,6 +100,7 @@ namespace VODStreaming.Services
             manifest = ConvertRelativeUrlsToAbsolute(manifest, manifestUrl);
             manifest = ConvertUrlsToProxyUrls(getSecondLevelProxyUrl, manifest);
             manifest = SetAudioDefaults(manifest);
+            manifest = Regex.Replace(manifest, $"#EXT-X-I-FRAME-STREAM-INF:.+\n", (Match m) => "");
 
             if (max720p)
             {
