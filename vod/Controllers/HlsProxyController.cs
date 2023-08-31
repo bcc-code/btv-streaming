@@ -30,6 +30,7 @@ namespace VODStreaming
         [HttpHead("subtitles")]
         [HttpHead("toplevelmanifest")]
         [HttpHead("secondlevelmanifest")]
+        [EnableCors("All")]
         public ActionResult GetHeadersForHeadRequests()
         {
             Response.Headers.Add("X-Content-Type-Options", "nosniff");

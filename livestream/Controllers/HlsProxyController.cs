@@ -30,6 +30,7 @@ namespace LivestreamFunctions
         [HttpHead("subtitles")]
         [HttpHead("top-level")]
         [HttpHead("second-level")]
+        [EnableCors("All")]
         public ActionResult GetHeadersForHeadRequests()
         {
             Response.Headers.Add("X-Content-Type-Options", "nosniff");
